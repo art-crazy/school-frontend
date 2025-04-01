@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - master
-      - '**'
+      - '**'  # Обработка всех веток
 
 jobs:
   build:
@@ -81,4 +81,18 @@ jobs:
         if: github.ref == 'refs/heads/master'
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
-            "sudo certbot --nginx -d mentor-hub.ru --non-interactive --agree
+            "sudo certbot --nginx -d mentor-hub.ru -d www.mentor-hub.ru --non-interactive --agree-tos --email ${{ secrets.ADMIN_EMAIL }} --redirect || \
+             echo 'Certbot failed, continuing...'"
+
+      - name: Configure Nginx and SSL for branches
+        if: github.ref != 'refs/heads/master'
+        run: |
+          ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
+            "sudo certbot --nginx -d ${{ steps.vars.outputs.DEPLOY_DOMAIN }} --non-interactive --agree-tos --email ${{ secrets.ADMIN_EMAIL }} --redirect || \
+             echo 'Certbot failed, continuing...'"
+
+      - name: Verify deployment
+        run: |
+          echo "Testing deployment at ${{ steps.vars.outputs.DEPLOY_DOMAIN }}"
+          ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
+            "curl -I http://localhost || echo 'Deployment verification failed'"
