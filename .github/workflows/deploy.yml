@@ -1,4 +1,4 @@
-name: Build and Deploy School Frontend
+name: Optimized School Frontend Deployment
 
 on:
   push:
@@ -9,71 +9,45 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build project
-        run: npm run build
-
+      - name: Install and Build
+        run: |
+          npm install
+          npm run build
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: school-frontend-build
+          name: school-build
           path: dist/
-          retention-days: 1
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
-          name: school-frontend-build
+          name: school-build
           path: dist/
 
-      - name: Setup SSH
+      - name: Configure SSH
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+          echo "StrictHostKeyChecking no" >> ~/.ssh/config
           ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
-      - name: Prepare remote directory
+      - name: Deploy and Verify
         run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
-            ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
-            "mkdir -p /var/www/school-frontend/dist"
-
-      - name: Deploy via SSH
-        run: |
-          # Создаем временный tar-архив
           tar -czf deploy.tar.gz -C dist .
-          
-          # Копируем на сервер
-          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
-            deploy.tar.gz \
-            ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/tmp/
-          
-          # Распаковываем в правильную папку dist
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
-            ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
-            "tar -xzf /tmp/deploy.tar.gz -C /var/www/school-frontend/dist \
-            && chown -R arzhannikov:arzhannikov /var/www/school-frontend/dist \
-            && chmod -R 755 /var/www/school-frontend/dist \
-            && rm /tmp/deploy.tar.gz"
-          
-          # Удаляем локальный архив
+          scp -i ~/.ssh/id_rsa deploy.tar.gz ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/tmp/
+          ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
+            "mkdir -p /var/www/school-frontend/dist && \
+             tar -xzf /tmp/deploy.tar.gz -C /var/www/school-frontend/dist && \
+             chown -R arzhannikov:arzhannikov /var/www/school-frontend/dist && \
+             rm /tmp/deploy.tar.gz && \
+             ls -la /var/www/school-frontend/dist"
           rm deploy.tar.gz
-
-      - name: Verify deployment
-        run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
-            ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
-            "ls -la /var/www/school-frontend/dist"
