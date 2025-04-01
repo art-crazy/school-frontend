@@ -43,24 +43,24 @@ jobs:
       - name: Prepare server directory
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
-            "sudo mkdir -p /var/www/mentor-hub.ru && \
-             sudo chown -R ${{ secrets.SSH_USER }}:${{ secrets.SSH_USER }} /var/www/mentor-hub.ru"
+            "sudo mkdir -p /var/www/mentor-hub && \
+             sudo chown -R ${{ secrets.SSH_USER }}:${{ secrets.SSH_USER }} /var/www/mentor-hub"
 
       - name: Deploy files
         run: |
           tar -czf deploy.tar.gz -C dist .
           scp -i ~/.ssh/id_rsa deploy.tar.gz ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/tmp/
           ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
-            "tar -xzf /tmp/deploy.tar.gz -C /var/www/mentor-hub.ru && \
+            "tar -xzf /tmp/deploy.tar.gz -C /var/www/mentor-hub && \
              rm /tmp/deploy.tar.gz"
           rm deploy.tar.gz
 
       - name: Set correct permissions
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
-            "sudo chown -R www-data:www-data /var/www/mentor-hub.ru && \
-             sudo find /var/www/mentor-hub.ru -type d -exec chmod 755 {} \; && \
-             sudo find /var/www/mentor-hub.ru -type f -exec chmod 644 {} \;"
+            "sudo chown -R www-data:www-data /var/www/mentor-hub && \
+             sudo find /var/www/mentor-hub -type d -exec chmod 755 {} \; && \
+             sudo find /var/www/mentor-hub -type f -exec chmod 644 {} \;"
 
       - name: Configure Nginx and SSL
         run: |
