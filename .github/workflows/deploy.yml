@@ -45,6 +45,12 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
+      - name: Prepare remote directory
+        run: |
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
+            ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
+            "mkdir -p /var/www/school-frontend/dist"
+
       - name: Deploy via SSH
         run: |
           # Создаем временный tar-архив
@@ -55,12 +61,12 @@ jobs:
             deploy.tar.gz \
             ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/tmp/
           
-          # Распаковываем на сервере
+          # Распаковываем в правильную папку dist
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
             ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
-            "tar -xzf /tmp/deploy.tar.gz -C /var/www/school-frontend \
-            && chown -R arzhannikov:arzhannikov /var/www/school-frontend \
-            && chmod -R 755 /var/www/school-frontend \
+            "tar -xzf /tmp/deploy.tar.gz -C /var/www/school-frontend/dist \
+            && chown -R arzhannikov:arzhannikov /var/www/school-frontend/dist \
+            && chmod -R 755 /var/www/school-frontend/dist \
             && rm /tmp/deploy.tar.gz"
           
           # Удаляем локальный архив
@@ -70,4 +76,4 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
             ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
-            "ls -la /var/www/school-frontend"
+            "ls -la /var/www/school-frontend/dist"
