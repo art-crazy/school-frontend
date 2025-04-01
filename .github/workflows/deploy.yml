@@ -21,7 +21,7 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Show build files
+      - name: Verify build files
         run: ls -la dist/
 
       - name: Upload artifacts
@@ -41,54 +41,39 @@ jobs:
           name: school-frontend-build
           path: dist/
 
-      - name: Debug environment variables
+      - name: Setup SSH environment
         run: |
-          echo "Checking environment variables..."
-          echo "SERVER_IP: ${{ secrets.SERVER_IP }}"
-          echo "SSH_USER: ${{ secrets.SSH_USER }}"
-
-      - name: Check if SSH key exists
-        run: |
-          if [ -z "${{ secrets.SSH_PRIVATE_KEY }}" ]; then
-            echo "ERROR: SSH_PRIVATE_KEY is missing!"
-            exit 1
-          else
-            echo "SSH_PRIVATE_KEY is set."
-          fi
-
-      - name: Setup SSH connection
-        run: |
-          echo "Setting up SSH..."
           mkdir -p ~/.ssh
-          echo -e "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          chmod 700 ~/.ssh
-          ssh-keyscan -t rsa ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
-      - name: Verify SSH private key
+      - name: Verify SSH connection
         run: |
-          echo "Checking SSH private key..."
-          cat ~/.ssh/id_rsa
-          ls -l ~/.ssh
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
+          ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
+          "echo 'SSH connection successful'"
 
-      - name: Test SSH connection
+      - name: Clean remote directory
         run: |
-          echo "Testing SSH connection..."
-          ssh -v -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "echo 'SSH connection successful!'"
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
+          ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
+          "rm -rf /var/www/school-frontend/*"
 
-      - name: Deploy to server
-        uses: appleboy/scp-action@v0.1.0
+      - name: Deploy files using rsync
+        uses: burnett01/rsync-deployments@5.2.3
         with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "dist/*"
-          target: "/var/www/school-frontend"
-          strip_components: 1
-          port: 22
-          timeout: 30s
-          command_timeout: 10m
-          use_insecure_cipher: false
-          rm: false
-          debug: true  # Включение режима отладки для SCP
-          overwrite: false
+          switches: -avz --chown=arzhannikov:arzhannikov --chmod=755
+          path: dist/
+          remote_path: /var/www/school-frontend/
+          remote_host: ${{ secrets.SERVER_IP }}
+          remote_user: ${{ secrets.SSH_USER }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          delete: true
+          recursive: true
+
+      - name: Verify deployment
+        run: |
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
+          ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
+          "ls -la /var/www/school-frontend"
