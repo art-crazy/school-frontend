@@ -18,7 +18,7 @@ jobs:
       - name: Install and Build
         run: |
           npm install
-          npm run build
+          npm run build -- --base=/
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -99,8 +99,28 @@ jobs:
               include /etc/letsencrypt/options-ssl-nginx.conf;
               ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
           
+              types {
+                  application/javascript js mjs;
+                  text/css css;
+              }
+          
               location / {
                   try_files \$uri /index.html =404;
+              }
+
+              location ~* \.(js|mjs)$ {
+                  types { application/javascript js mjs; }
+                  add_header Content-Type application/javascript;
+              }
+
+              location ~* \.(css)$ {
+                  types { text/css css; }
+                  add_header Content-Type text/css;
+              }
+
+              location /assets/ {
+                  try_files \$uri =404;
+                  add_header Cache-Control "public, max-age=31536000, immutable";
               }
           }
           EOF
@@ -147,7 +167,7 @@ jobs:
             --no-eff-email \
             --keep-until-expiring || echo "Certbot завершился с ошибкой, продолжаем..."
 
-          # 4. Финальный конфиг с исправленным try_files
+          # 4. Финальный конфиг
           sudo tee /etc/nginx/sites-available/${{ steps.vars.outputs.DEPLOY_DOMAIN }}.conf > /dev/null << 'EOF'
           server {
               listen 80;
@@ -167,8 +187,28 @@ jobs:
               include /etc/letsencrypt/options-ssl-nginx.conf;
               ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
           
+              types {
+                  application/javascript js mjs;
+                  text/css css;
+              }
+          
               location / {
                   try_files \$uri /index.html =404;
+              }
+
+              location ~* \.(js|mjs)$ {
+                  types { application/javascript js mjs; }
+                  add_header Content-Type application/javascript;
+              }
+
+              location ~* \.(css)$ {
+                  types { text/css css; }
+                  add_header Content-Type text/css;
+              }
+
+              location /assets/ {
+                  try_files \$uri =404;
+                  add_header Cache-Control "public, max-age=31536000, immutable";
               }
 
               error_page 404 /404.html;
@@ -184,4 +224,4 @@ jobs:
         run: |
           echo "Testing deployment at ${{ steps.vars.outputs.DEPLOY_DOMAIN }}"
           ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
-            "curl -I https://${{ steps.vars.outputs.DEPLOY_DOMAIN }} || echo 'Verification failed'"
+            "curl -vk https://${{ steps.vars.outputs.DEPLOY_DOMAIN }} || echo 'Verification failed'"
