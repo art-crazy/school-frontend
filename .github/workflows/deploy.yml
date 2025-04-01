@@ -102,10 +102,6 @@ jobs:
               include /etc/nginx/mime.types;
               default_type application/octet-stream;
 
-#              location / {
-#                  try_files \$uri \$uri/ /index.html;
-#              }
-
               location / {
                   try_files $uri /index.html =404;
               }
@@ -196,10 +192,6 @@ jobs:
           
               include /etc/nginx/mime.types;
               default_type application/octet-stream;
-
-#              location / {
-#                  try_files \$uri \$uri/ /index.html;
-#              }
 
               location / {
                   try_files $uri /index.html =404;
