@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - master
-      - '**'  # Все ветки
+      - '**'
 
 jobs:
   build:
@@ -79,69 +79,78 @@ jobs:
       - name: Configure Nginx for master
         if: github.ref == 'refs/heads/master'
         run: |
-          ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "
-            sudo bash -c 'cat > /etc/nginx/sites-available/mentor-hub.conf <<EOF
-            server {
-                listen 80;
-                server_name mentor-hub.ru www.mentor-hub.ru;
-                return 301 https://\\\$host\\\$request_uri;
-            }
+          ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOT'
+          sudo tee /etc/nginx/sites-available/mentor-hub.conf > /dev/null << 'EOF'
+          server {
+              listen 80;
+              server_name mentor-hub.ru www.mentor-hub.ru;
+              return 301 https://$host$request_uri;
+          }
           
-            server {
-                listen 443 ssl;
-                server_name mentor-hub.ru www.mentor-hub.ru;
+          server {
+              listen 443 ssl;
+              server_name mentor-hub.ru www.mentor-hub.ru;
           
-                root /var/www/mentor-hub;
-                index index.html;
+              root /var/www/mentor-hub;
+              index index.html;
           
-                ssl_certificate /etc/letsencrypt/live/mentor-hub.ru/fullchain.pem;
-                ssl_certificate_key /etc/letsencrypt/live/mentor-hub.ru/privkey.pem;
-                include /etc/letsencrypt/options-ssl-nginx.conf;
-                ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+              ssl_certificate /etc/letsencrypt/live/mentor-hub.ru/fullchain.pem;
+              ssl_certificate_key /etc/letsencrypt/live/mentor-hub.ru/privkey.pem;
+              include /etc/letsencrypt/options-ssl-nginx.conf;
+              ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
           
-                location / {
-                    try_files \\\$uri \\\$uri/ /index.html;
-                }
-            }
-            EOF'
+              location / {
+                  try_files $uri $uri/ /index.html;
+              }
+          }
+          EOF
           
-            sudo ln -sf /etc/nginx/sites-available/mentor-hub.conf /etc/nginx/sites-enabled/
-            sudo systemctl reload nginx
-          "
+          sudo ln -sf /etc/nginx/sites-available/mentor-hub.conf /etc/nginx/sites-enabled/
+          sudo nginx -t && sudo systemctl reload nginx
+          EOT
 
       - name: Configure Nginx for branches
         if: github.ref != 'refs/heads/master'
         run: |
-          ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "
-            # Создаём динамический конфиг для поддомена
-            sudo bash -c 'cat > /etc/nginx/sites-available/${{ steps.vars.outputs.DEPLOY_DOMAIN }}.conf <<EOF
-            server {
-                listen 80;
-                server_name ${{ steps.vars.outputs.DEPLOY_DOMAIN }};
-                return 301 https://\\\$host\\\$request_uri;
-            }
+          ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOT'
+          # Создаём временный файл конфигурации
+          CONF_FILE="/tmp/nginx_${GITHUB_REF_NAME}.conf"
+          cat > $CONF_FILE << 'EOF'
+          server {
+              listen 80;
+              server_name $DEPLOY_DOMAIN;
+              return 301 https://$host$request_uri;
+          }
           
-            server {
-                listen 443 ssl;
-                server_name ${{ steps.vars.outputs.DEPLOY_DOMAIN }};
+          server {
+              listen 443 ssl;
+              server_name $DEPLOY_DOMAIN;
           
-                root ${{ steps.vars.outputs.DEPLOY_PATH }};
-                index index.html;
+              root $DEPLOY_PATH;
+              index index.html;
           
-                ssl_certificate /etc/letsencrypt/live/mentor-hub.ru/fullchain.pem;
-                ssl_certificate_key /etc/letsencrypt/live/mentor-hub.ru/privkey.pem;
-                include /etc/letsencrypt/options-ssl-nginx.conf;
-                ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+              ssl_certificate /etc/letsencrypt/live/mentor-hub.ru/fullchain.pem;
+              ssl_certificate_key /etc/letsencrypt/live/mentor-hub.ru/privkey.pem;
+              include /etc/letsencrypt/options-ssl-nginx.conf;
+              ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
           
-                location / {
-                    try_files \\\$uri \\\$uri/ /index.html;
-                }
-            }
-            EOF'
+              location / {
+                  try_files $uri $uri/ /index.html;
+              }
+          }
+          EOF
           
-            sudo ln -sf /etc/nginx/sites-available/${{ steps.vars.outputs.DEPLOY_DOMAIN }}.conf /etc/nginx/sites-enabled/
-            sudo systemctl reload nginx
-          "
+          # Подставляем переменные
+          sed -i "s|\$DEPLOY_DOMAIN|${{ steps.vars.outputs.DEPLOY_DOMAIN }}|g" $CONF_FILE
+          sed -i "s|\$DEPLOY_PATH|${{ steps.vars.outputs.DEPLOY_PATH }}|g" $CONF_FILE
+          
+          # Копируем и активируем конфиг
+          sudo mv $CONF_FILE /etc/nginx/sites-available/${{ steps.vars.outputs.DEPLOY_DOMAIN }}.conf
+          sudo ln -sf /etc/nginx/sites-available/${{ steps.vars.outputs.DEPLOY_DOMAIN }}.conf /etc/nginx/sites-enabled/
+          
+          # Проверяем и перезагружаем Nginx
+          sudo nginx -t && sudo systemctl reload nginx
+          EOT
 
       - name: Verify deployment
         run: |
