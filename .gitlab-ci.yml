@@ -17,7 +17,7 @@ build:
     paths:
       - dist/
   only:
-    - main
+    - master
 
 deploy_to_server:
   stage: deploy
@@ -31,4 +31,4 @@ deploy_to_server:
     - ssh arzhannikov@$109.205.56.59 "rm -rf /var/www/school-frontend/*"
     - rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" dist/ arzhannikov@$109.205.56.59:/var/www/school-frontend
   only:
-    - main
+    - master
