@@ -36,6 +36,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: school-frontend-build
+          path: dist/  # Явно указываем путь для распаковки
+
+      - name: Verify files exist
+        run: |
+          ls -la dist/
+          [ "$(ls -A dist/)" ] || { echo "Directory dist/ is empty!"; exit 1; }
 
       - name: Deploy to server
         uses: appleboy/scp-action@v0.1.0
@@ -45,4 +51,4 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "dist/*"
           target: "/var/www/school-frontend"
-          strip_components: 1  # Исправлено на правильное название параметра
+          strip_components: 1
