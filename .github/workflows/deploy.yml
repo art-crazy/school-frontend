@@ -2,7 +2,7 @@ name: Build and Deploy School Frontend
 
 on:
   push:
-    branches: [ master ]  # Используем ветку master вместо main
+    branches: [ master ]
 
 jobs:
   build:
@@ -19,7 +19,7 @@ jobs:
         run: npm install
 
       - name: Build project
-        run: npm run build  # Папка dist/ будет создана после сборки
+        run: npm run build
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -44,5 +44,5 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "dist/*"
-          target: "/var/www/school-frontend"  # Путь на сервере
-          strip-components: 1  # Игнорируем папку dist/ при копировании
+          target: "/var/www/school-frontend"
+          strip_components: 1  # Исправлено на правильное название параметра
