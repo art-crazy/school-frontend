@@ -99,28 +99,31 @@ jobs:
               include /etc/letsencrypt/options-ssl-nginx.conf;
               ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
           
-              types {
-                  application/javascript js mjs;
-                  text/css css;
-              }
+              include /etc/nginx/mime.types;
+              default_type application/octet-stream;
           
               location / {
-                  try_files \$uri /index.html =404;
+                  try_files \$uri \$uri/ /index.html;
               }
 
               location ~* \.(js|mjs)$ {
-                  types { application/javascript js mjs; }
                   add_header Content-Type application/javascript;
               }
 
-              location ~* \.(css)$ {
-                  types { text/css css; }
+              location ~* \.css$ {
                   add_header Content-Type text/css;
               }
 
-              location /assets/ {
-                  try_files \$uri =404;
+              location ~* \.(?:jpg|jpeg|png|gif|ico|svg|webp|woff2?|ttf|eot)$ {
+                  expires 1y;
                   add_header Cache-Control "public, max-age=31536000, immutable";
+                  access_log off;
+              }
+
+              location ~ /\. {
+                  deny all;
+                  access_log off;
+                  log_not_found off;
               }
           }
           EOF
@@ -187,28 +190,31 @@ jobs:
               include /etc/letsencrypt/options-ssl-nginx.conf;
               ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
           
-              types {
-                  application/javascript js mjs;
-                  text/css css;
-              }
+              include /etc/nginx/mime.types;
+              default_type application/octet-stream;
           
               location / {
-                  try_files \$uri /index.html =404;
+                  try_files \$uri \$uri/ /index.html;
               }
 
               location ~* \.(js|mjs)$ {
-                  types { application/javascript js mjs; }
                   add_header Content-Type application/javascript;
               }
 
-              location ~* \.(css)$ {
-                  types { text/css css; }
+              location ~* \.css$ {
                   add_header Content-Type text/css;
               }
 
-              location /assets/ {
-                  try_files \$uri =404;
+              location ~* \.(?:jpg|jpeg|png|gif|ico|svg|webp|woff2?|ttf|eot)$ {
+                  expires 1y;
                   add_header Cache-Control "public, max-age=31536000, immutable";
+                  access_log off;
+              }
+
+              location ~ /\. {
+                  deny all;
+                  access_log off;
+                  log_not_found off;
               }
 
               error_page 404 /404.html;
