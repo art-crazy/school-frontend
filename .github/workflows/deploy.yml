@@ -84,11 +84,11 @@ jobs:
           server {
               listen 80;
               server_name mentor-hub.ru www.mentor-hub.ru;
-              return 301 https://$host$request_uri;
+              return 301 https://\$host\$request_uri;
           }
           
           server {
-              listen 443 ssl;
+              listen 443 ssl http2;
               server_name mentor-hub.ru www.mentor-hub.ru;
           
               root /var/www/mentor-hub;
@@ -100,7 +100,7 @@ jobs:
               ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
           
               location / {
-                  try_files $uri $uri/ /index.html;
+                  try_files \$uri \$uri/ /index.html;
               }
           }
           EOF
@@ -109,46 +109,67 @@ jobs:
           sudo nginx -t && sudo systemctl reload nginx
           EOT
 
-      - name: Configure Nginx for branches
+      - name: Configure Nginx and SSL for branches
         if: github.ref != 'refs/heads/master'
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOT'
-          # Создаём временный файл конфигурации
-          CONF_FILE="/tmp/nginx_${GITHUB_REF_NAME}.conf"
-          cat > $CONF_FILE << 'EOF'
+          # Создаем временный конфиг для верификации
+          TEMP_CONF="/tmp/nginx_temp_${{ steps.vars.outputs.DEPLOY_DOMAIN }}.conf"
+          cat > \$TEMP_CONF << 'EOF'
           server {
               listen 80;
-              server_name $DEPLOY_DOMAIN;
-              return 301 https://$host$request_uri;
-          }
+              server_name ${{ steps.vars.outputs.DEPLOY_DOMAIN }};
           
-          server {
-              listen 443 ssl;
-              server_name $DEPLOY_DOMAIN;
-          
-              root $DEPLOY_PATH;
-              index index.html;
-          
-              ssl_certificate /etc/letsencrypt/live/mentor-hub.ru/fullchain.pem;
-              ssl_certificate_key /etc/letsencrypt/live/mentor-hub.ru/privkey.pem;
-              include /etc/letsencrypt/options-ssl-nginx.conf;
-              ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+              location /.well-known/acme-challenge/ {
+                  root /var/www/certbot;
+              }
           
               location / {
-                  try_files $uri $uri/ /index.html;
+                  return 301 https://\$host\$request_uri;
               }
           }
           EOF
           
-          # Подставляем переменные
-          sed -i "s|\$DEPLOY_DOMAIN|${{ steps.vars.outputs.DEPLOY_DOMAIN }}|g" $CONF_FILE
-          sed -i "s|\$DEPLOY_PATH|${{ steps.vars.outputs.DEPLOY_PATH }}|g" $CONF_FILE
-          
-          # Копируем и активируем конфиг
-          sudo mv $CONF_FILE /etc/nginx/sites-available/${{ steps.vars.outputs.DEPLOY_DOMAIN }}.conf
+          # Активируем временный конфиг
+          sudo mv \$TEMP_CONF /etc/nginx/sites-available/${{ steps.vars.outputs.DEPLOY_DOMAIN }}.conf
           sudo ln -sf /etc/nginx/sites-available/${{ steps.vars.outputs.DEPLOY_DOMAIN }}.conf /etc/nginx/sites-enabled/
+          sudo systemctl reload nginx
           
-          # Проверяем и перезагружаем Nginx
+          # Выпускаем сертификат
+          sudo certbot certonly --nginx \
+            -d ${{ steps.vars.outputs.DEPLOY_DOMAIN }} \
+            --non-interactive \
+            --agree-tos \
+            --email ${{ secrets.ADMIN_EMAIL }} \
+            --no-eff-email \
+            --keep-until-expiring
+          
+          # Создаем финальный конфиг с SSL
+          sudo tee /etc/nginx/sites-available/${{ steps.vars.outputs.DEPLOY_DOMAIN }}.conf > /dev/null << 'EOF'
+          server {
+              listen 80;
+              server_name ${{ steps.vars.outputs.DEPLOY_DOMAIN }};
+              return 301 https://\$host\$request_uri;
+          }
+          
+          server {
+              listen 443 ssl http2;
+              server_name ${{ steps.vars.outputs.DEPLOY_DOMAIN }};
+          
+              root ${{ steps.vars.outputs.DEPLOY_PATH }};
+              index index.html;
+          
+              ssl_certificate /etc/letsencrypt/live/${{ steps.vars.outputs.DEPLOY_DOMAIN }}/fullchain.pem;
+              ssl_certificate_key /etc/letsencrypt/live/${{ steps.vars.outputs.DEPLOY_DOMAIN }}/privkey.pem;
+              include /etc/letsencrypt/options-ssl-nginx.conf;
+              ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+          
+              location / {
+                  try_files \$uri \$uri/ /index.html;
+              }
+          }
+          EOF
+          
           sudo nginx -t && sudo systemctl reload nginx
           EOT
 
@@ -156,4 +177,4 @@ jobs:
         run: |
           echo "Testing deployment at ${{ steps.vars.outputs.DEPLOY_DOMAIN }}"
           ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
-            "curl -I https://${{ steps.vars.outputs.DEPLOY_DOMAIN }} || echo 'Verification failed'"
+            "curl -vk https://${{ steps.vars.outputs.DEPLOY_DOMAIN }} || echo 'Verification failed'"
