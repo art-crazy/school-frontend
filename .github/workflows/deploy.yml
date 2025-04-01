@@ -43,32 +43,31 @@ jobs:
 
       - name: Debug environment variables
         run: |
-          echo "SERVER_IP=${{ secrets.SERVER_IP }}"
-          echo "SSH_USER=${{ secrets.SSH_USER }}"
-          echo "Build directory:"
-          ls -la dist/
-
-      - name: Debug secrets (unsafe)
-        run: |
-          echo "SERVER_IP=$(echo '${{ secrets.SERVER_IP }}' | base64 --decode)"
-          echo "SSH_USER=$(echo '${{ secrets.SSH_USER }}' | base64 --decode)"
+          echo "Checking environment variables..."
+          echo "SERVER_IP: ${{ secrets.SERVER_IP }}"
+          echo "SSH_USER: ${{ secrets.SSH_USER }}"
 
       - name: Check if SSH key exists
         run: |
           if [ -z "${{ secrets.SSH_PRIVATE_KEY }}" ]; then
-            echo "SSH_PRIVATE_KEY is missing!"
+            echo "ERROR: SSH_PRIVATE_KEY is missing!"
             exit 1
           else
             echo "SSH_PRIVATE_KEY is set."
           fi
 
-      - name: Verify SSH connection
+      - name: Setup SSH connection
         run: |
+          echo "Setting up SSH..."
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           chmod 700 ~/.ssh
           ssh-keyscan -t rsa ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+
+      - name: Test SSH connection
+        run: |
+          echo "Testing SSH connection..."
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "echo 'SSH connection successful!'"
 
       - name: Deploy to server
