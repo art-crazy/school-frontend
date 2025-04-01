@@ -60,15 +60,21 @@ jobs:
         run: |
           echo "Setting up SSH..."
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          echo -e "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           chmod 700 ~/.ssh
           ssh-keyscan -t rsa ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
+      - name: Verify SSH private key
+        run: |
+          echo "Checking SSH private key..."
+          cat ~/.ssh/id_rsa
+          ls -l ~/.ssh
+
       - name: Test SSH connection
         run: |
           echo "Testing SSH connection..."
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "echo 'SSH connection successful!'"
+          ssh -v -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "echo 'SSH connection successful!'"
 
       - name: Deploy to server
         uses: appleboy/scp-action@v0.1.0
