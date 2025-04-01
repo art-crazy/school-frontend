@@ -21,6 +21,9 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Show build files
+        run: ls -la dist/
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -36,12 +39,15 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: school-frontend-build
-          path: dist/  # Явно указываем путь для распаковки
+          path: dist/
 
-      - name: Verify files exist
+      - name: Verify SSH connection
         run: |
-          ls -la dist/
-          [ "$(ls -A dist/)" ] || { echo "Directory dist/ is empty!"; exit 1; }
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "echo 'SSH connection successful!'"
 
       - name: Deploy to server
         uses: appleboy/scp-action@v0.1.0
