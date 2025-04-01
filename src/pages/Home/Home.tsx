@@ -9,7 +9,7 @@ import Navigation from "@/shared/components/Navigation";
 
 function Home() {
 
-    console.log('3')
+    console.log('4')
     const location = useLocation();
 
     useEffect(() => {
