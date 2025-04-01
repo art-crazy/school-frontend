@@ -48,6 +48,11 @@ jobs:
           echo "Build directory:"
           ls -la dist/
 
+      - name: Debug secrets (unsafe)
+        run: |
+          echo "SERVER_IP=$(echo '${{ secrets.SERVER_IP }}' | base64 --decode)"
+          echo "SSH_USER=$(echo '${{ secrets.SSH_USER }}' | base64 --decode)"
+
       - name: Check if SSH key exists
         run: |
           if [ -z "${{ secrets.SSH_PRIVATE_KEY }}" ]; then
