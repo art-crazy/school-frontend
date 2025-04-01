@@ -2,7 +2,9 @@ name: Mentor Hub Deployment
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
+      - '*'
 
 jobs:
   build:
@@ -40,30 +42,51 @@ jobs:
           echo "StrictHostKeyChecking no" >> ~/.ssh/config
           ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
+      - name: Determine deployment path and domain
+        id: vars
+        run: |
+          if [ "$GITHUB_REF_NAME" = "master" ]; then
+            echo "DEPLOY_PATH=/var/www/mentor-hub" >> $GITHUB_OUTPUT
+            echo "DEPLOY_DOMAIN=mentor-hub.ru" >> $GITHUB_OUTPUT
+          else
+            # Sanitize branch name for filesystem and DNS
+            SANITIZED_BRANCH=$(echo "$GITHUB_REF_NAME" | tr -cd '[:alnum:]-._' | tr '[:upper:]' '[:lower:]')
+            echo "DEPLOY_PATH=/var/www/$SANITIZED_BRANCH.mentor-hub" >> $GITHUB_OUTPUT
+            echo "DEPLOY_DOMAIN=$SANITIZED_BRANCH.mentor-hub.ru" >> $GITHUB_OUTPUT
+          fi
+
       - name: Prepare server directory
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
-            "sudo mkdir -p /var/www/mentor-hub && \
-             sudo chown -R ${{ secrets.SSH_USER }}:${{ secrets.SSH_USER }} /var/www/mentor-hub"
+            "sudo mkdir -p ${{ steps.vars.outputs.DEPLOY_PATH }} && \
+             sudo chown -R ${{ secrets.SSH_USER }}:${{ secrets.SSH_USER }} ${{ steps.vars.outputs.DEPLOY_PATH }}"
 
       - name: Deploy files
         run: |
           tar -czf deploy.tar.gz -C dist .
           scp -i ~/.ssh/id_rsa deploy.tar.gz ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/tmp/
           ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
-            "tar -xzf /tmp/deploy.tar.gz -C /var/www/mentor-hub && \
+            "tar -xzf /tmp/deploy.tar.gz -C ${{ steps.vars.outputs.DEPLOY_PATH }} && \
              rm /tmp/deploy.tar.gz"
           rm deploy.tar.gz
 
       - name: Set correct permissions
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
-            "sudo chown -R www-data:www-data /var/www/mentor-hub && \
-             sudo find /var/www/mentor-hub -type d -exec chmod 755 {} \; && \
-             sudo find /var/www/mentor-hub -type f -exec chmod 644 {} \;"
+            "sudo chown -R www-data:www-data ${{ steps.vars.outputs.DEPLOY_PATH }} && \
+             sudo find ${{ steps.vars.outputs.DEPLOY_PATH }} -type d -exec chmod 755 {} \; && \
+             sudo find ${{ steps.vars.outputs.DEPLOY_PATH }} -type f -exec chmod 644 {} \;"
 
-      - name: Configure Nginx and SSL
+      - name: Configure Nginx and SSL for master branch
+        if: github.ref == 'refs/heads/master'
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
             "sudo certbot --nginx -d mentor-hub.ru --non-interactive --agree-tos --email ${{ secrets.ADMIN_EMAIL }} --redirect || \
+             echo 'Certbot failed, continuing...'"
+
+      - name: Configure Nginx and SSL for feature branches
+        if: github.ref != 'refs/heads/master'
+        run: |
+          ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
+            "sudo certbot --nginx -d ${{ steps.vars.outputs.DEPLOY_DOMAIN }} --non-interactive --agree-tos --email ${{ secrets.ADMIN_EMAIL }} --redirect || \
              echo 'Certbot failed, continuing...'"
