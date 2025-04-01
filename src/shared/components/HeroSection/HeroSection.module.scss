@@ -1,0 +1,119 @@
+@use '@/styles/vars' as *;
+
+.main {
+  position: relative;
+  width: 100%;
+  background-color: $BACKGROUND_PRIMARY;
+  overflow: visible;
+
+  .heroWrapper {
+    position: relative;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16/9;
+    overflow: visible;
+  }
+
+  .heroImage {
+    width: 100%;
+    height: 100%;
+    background: url('/DSCF5351-1.png') center/cover;
+  }
+
+  .p {
+    color: white;
+    border-radius: $RADIUS_S;
+    font-size: clamp(14px, 1.8vw, 18px);
+    line-height: 1.5;
+    z-index: 3;
+    padding: clamp(16px, 2vw, 32px);
+
+    // Общие стили эффектов
+    backdrop-filter: blur(8px);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.05), 0 0 30px 10px rgba(20,23,28,0.5);
+    transition: background-color 1.3s, box-shadow 0.5s;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: $RADIUS_S;
+      padding: 1px;
+      background: linear-gradient(45deg, transparent, #F25533, transparent, #F25533);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+  }
+
+  // Мобильная версия (эффекты всегда включены)
+  .p {
+    width: calc(100% - 32px);
+    margin: 30px 16px 0 16px;
+    font-size: 16px;
+    background-color: $BACKGROUND_PRIMARY;
+    //box-shadow: 0 0 50px $COLOR_SECONDARY;
+    &::before {
+      opacity: 1;
+    }
+  }
+}
+
+// Десктопная версия
+@media (min-width: 650px) {
+  .main {
+    .p {
+      font-size: clamp(14px,1.8vw,18px);
+      position: absolute;
+      right: 5%;
+      top: 5%;
+      width: min(40%, 600px);
+      min-width: 280px;
+      margin: 0;
+      background: rgba(20,23,28,0.2);
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.05), 0 0 30px 10px rgba(20,23,28,0.5);
+      &::before {
+        opacity: 0;
+      }
+
+      &:hover {
+        background-color: $GREY;
+        box-shadow: 0 0 50px $COLOR_SECONDARY;
+        &::before {
+          opacity: 1;
+        }
+      }
+      &:active {
+        box-shadow: 0 0 70px $COLOR_SECONDARY;
+        background-color: #14171C;
+      }
+    }
+
+    .heroWrapper {
+      &::before, &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 10%;
+        z-index: 2;
+      }
+      &::before {
+        top: 0;
+        background: linear-gradient(to bottom, #14171C 0%, rgba(0,0,0,0) 35%);
+      }
+      &::after {
+        bottom: 0;
+        background: linear-gradient(to top, #14171C, rgba(0,0,0,0) 100%);
+      }
+    }
+
+    .heroImage {
+      mask: linear-gradient(to right, #000 50%, rgba(0,0,0,0.01) 85%);
+      -webkit-mask: linear-gradient(to right, #000 50%, rgba(0,0,0,0.01) 85%);
+    }
+  }
+}

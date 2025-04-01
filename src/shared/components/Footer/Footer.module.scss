@@ -1,0 +1,110 @@
+@use '@/styles/vars' as *;
+
+.footer {
+  display: flex;
+  flex-direction: column; // Меняем на колонку для мобильных
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px 20px 20px 40px;
+  color: #7d7f81;
+  width: 100%;
+  box-sizing: border-box; // Важно для правильного расчета ширины
+  gap: 16px;
+  box-shadow: 0 -1px 4px rgba(255, 255, 255, 0.1);
+  border-top: 1px solid hsl(0deg 0% 18%);
+  margin-top: 20px;
+}
+
+.button {
+  background-color: $BACKGROUND_SECONDARY;
+  padding: 4px 10px;
+  border: $BORDER;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  letter-spacing: 0.1px;
+  width: 100%;
+  order: -1;
+}
+
+.block__list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  letter-spacing: 0.1px;
+  width: 100%;
+}
+
+.contacts {
+  margin-bottom: 12px;
+  color: #7d7f81;
+  font-size: 18px;
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  letter-spacing: 0.1px;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: white;
+  flex-wrap: nowrap;
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+// Стили для иконок
+.tg {
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, #2AABEE 0%, #229ED9 100%);
+  border-radius: 50%;
+}
+
+.vk {
+  width: 24px;
+  height: 24px;
+  background: rgb(0, 119, 255);
+  border-radius: 25%;
+}
+
+@media screen and (min-width: 650px) {
+  .footer {
+    flex-direction: row;
+    padding: 40px 120px;
+    margin-top: 48px;
+    gap: unset;
+  }
+
+  .block {
+    width: auto;
+    order: unset;
+  }
+
+  .block__list {
+    width: auto;
+    order: unset;
+  }
+
+  .left {
+    flex-direction: row;
+    margin-bottom: 0;
+    gap: 40px;
+  }
+}

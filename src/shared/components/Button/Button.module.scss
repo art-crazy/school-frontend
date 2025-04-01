@@ -1,0 +1,35 @@
+@use '@/styles/vars' as *;
+
+.glow__button {
+  position: relative;
+  background-color: $GREY;
+  border-radius: $RADIUS_S;
+  color: white;
+  padding: 15px 32px;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  transition: background-color 0.3s, box-shadow 0.3s;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(45deg, transparent, #F25533, transparent);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  &:hover {
+    box-shadow: 0 0 50px $COLOR_SECONDARY;
+    &::before { opacity: 1; }
+  }
+
+  &:active { box-shadow: 0 0 70px $COLOR_SECONDARY; }
+}

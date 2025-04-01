@@ -1,0 +1,35 @@
+/* Regular */
+@font-face {
+  font-family: 'Share Tech CYR';
+  src: url('../fonts/Share-Tech-CYR.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Bold */
+@font-face {
+  font-family: 'Share Tech CYR';
+  src: url('../fonts/Share-Tech-CYR-Bold.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Italic */
+@font-face {
+  font-family: 'Share Tech CYR';
+  src: url('../fonts/Share-Tech-CYR-Italic.otf') format('opentype');
+  font-weight: normal; /* Обычное начертание (не жирное) */
+  font-style: italic;   /* Курсив */
+  font-display: swap;
+}
+
+/* Italic Bold */
+@font-face {
+  font-family: 'Share Tech CYR';
+  src: url('../fonts/Share-Tech-CYR-Italic-Bold.otf') format('opentype');
+  font-weight: bold;
+  font-style: italic;
+  font-display: swap;
+}

@@ -1,0 +1,51 @@
+@use '@/styles/vars' as *;
+
+.scrollToTop {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  z-index: 1000;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.iconContainer {
+  background-color: #2A292F;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.5s ease, box-shadow 0.5s ease;
+
+  &:hover {
+    background-color: rgba(242, 85, 51, 0.7);
+    box-shadow: 0 0 50px $COLOR_SECONDARY;
+
+  }
+  &:active {
+    background-color: rgba(242, 85, 51, 1);
+    box-shadow: 0 0 70px $COLOR_SECONDARY;
+
+    &::before {
+      opacity: 1;
+    }
+  }
+}
+
+.icon {
+  color: white;
+  font-size: 20px;
+}
+
+.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hidden {
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+}

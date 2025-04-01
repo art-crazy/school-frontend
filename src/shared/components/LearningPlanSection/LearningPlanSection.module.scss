@@ -1,0 +1,87 @@
+@use '@/styles/vars' as *;
+
+.container { @include container; }
+
+.gap { gap: 36px; }
+
+.accordion {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.section {
+  position: relative;
+  padding: 20px;
+  border-radius: $RADIUS_M;
+  background-color: #2A292F;
+  overflow: hidden; /* Уже есть в оригинале, оставляем */
+  font-size: 24px;
+  transition: background-color 1.3s, box-shadow 0.5s;
+
+  &:hover::before {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  &__active {
+    box-shadow: 0 0 50px $COLOR_SECONDARY;
+    background-color: $BACKGROUND_PRIMARY;
+  }
+}
+
+.section__title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section__content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 16px;
+
+  > div {
+    overflow: hidden;
+    min-height: 0;
+    padding-top: 0;
+    transition: padding-top 0.3s ease;
+  }
+
+  &.active {
+    grid-template-rows: 1fr;
+
+    > div {
+      padding-top: 16px;
+    }
+  }
+}
+
+@media screen and (min-width: 650px) {
+  .section {
+    font-size: 32px;
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: $RADIUS_M;
+      background: radial-gradient(circle, rgba(242,85,51,0.8), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 3;
+      transform: scale(0.9);
+      pointer-events: none;
+    }
+
+    &__active {
+      box-shadow: none;
+      background-color: #2A292F;
+    }
+  }
+
+  .section__content {
+    font-size: 22px;
+  }
+}

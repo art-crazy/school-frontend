@@ -1,0 +1,41 @@
+.privacyPolicy {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  color: #f5f5f5; // Светлый текст для тёмного фона
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #ffffff; // Белый цвет для заголовка
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #ffffff; // Белый цвет для подзаголовков
+}
+
+.sectionContent {
+  font-size: 16px;
+  color: #e0e0e0; // Светло-серый цвет для основного текста
+}
+
+.link {
+  color: #64b5f6; // Голубой цвет для ссылок (контрастный на тёмном фоне)
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
