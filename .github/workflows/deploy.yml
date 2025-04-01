@@ -41,12 +41,29 @@ jobs:
           name: school-frontend-build
           path: dist/
 
+      - name: Debug environment variables
+        run: |
+          echo "SERVER_IP=${{ secrets.SERVER_IP }}"
+          echo "SSH_USER=${{ secrets.SSH_USER }}"
+          echo "Build directory:"
+          ls -la dist/
+
+      - name: Check if SSH key exists
+        run: |
+          if [ -z "${{ secrets.SSH_PRIVATE_KEY }}" ]; then
+            echo "SSH_PRIVATE_KEY is missing!"
+            exit 1
+          else
+            echo "SSH_PRIVATE_KEY is set."
+          fi
+
       - name: Verify SSH connection
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+          chmod 700 ~/.ssh
+          ssh-keyscan -t rsa ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "echo 'SSH connection successful!'"
 
       - name: Deploy to server
