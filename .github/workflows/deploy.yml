@@ -1,53 +1,92 @@
-name: Optimized School Frontend Deployment
+# Название workflow (отображается в интерфейсе GitHub Actions)
+name: Build and Deploy School Frontend
 
+# Условия запуска workflow
 on:
   push:
-    branches: [ master ]
+    branches: [ master ]  # Триггер: запускать только при пуше в ветку master
 
+# Определение jobs (заданий)
 jobs:
+  # Job сборки приложения
   build:
+    # Запускать на последней версии Ubuntu
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - name: Install and Build
-        run: |
-          npm install
-          npm run build
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: school-build
-          path: dist/
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
+    # Последовательность шагов выполнения
     steps:
+      # Шаг 1: Получение кода из репозитория
+      - uses: actions/checkout@v4  # Стандартное действие GitHub для клонирования репозитория
+
+      # Шаг 2: Установка Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3  # Официальное действие для Node.js
+        with:
+          node-version: 18  # Конкретная версия Node.js (LTS)
+
+      # Шаг 3: Установка зависимостей и сборка проекта
+      - name: Install and Build
+        run: |  # Многострочная команда
+          npm install    # Установка всех зависимостей из package.json
+          npm run build  # Запуск скрипта сборки (создает папку dist/)
+
+      # Шаг 4: Сохранение результатов сборки
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4  # Действие для сохранения артефактов
+        with:
+          name: school-build  # Уникальное имя артефакта
+          path: dist/        # Путь к файлам для сохранения
+          # retention-days не указан - используется значение по умолчанию
+
+  # Job деплоя (зависит от успешного выполнения сборки)
+  deploy:
+    needs: build  # Зависимость от job build
+    runs-on: ubuntu-latest
+
+    steps:
+      # Шаг 1: Загрузка сохраненных артефактов сборки
       - uses: actions/download-artifact@v4
         with:
-          name: school-build
-          path: dist/
+          name: school-build  # Должно совпадать с именем при загрузке
+          path: dist/        # Распаковать в папку dist (перезаписывает существующую)
 
+      # Шаг 2: Настройка SSH-подключения
       - name: Configure SSH
-        run: |
+        run: |  # Многострочная команда
+          # Создаем папку .ssh если не существует
           mkdir -p ~/.ssh
+          
+          # Сохраняем приватный ключ из secrets GitHub в файл
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          
+          # Устанавливаем строгие права на ключ (только чтение для владельца)
           chmod 600 ~/.ssh/id_rsa
+          
+          # Отключаем проверку host key для всех SSH-подключений
           echo "StrictHostKeyChecking no" >> ~/.ssh/config
+          
+          # Добавляем fingerprint сервера в known_hosts
           ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
+      # Шаг 3: Деплой и проверка
       - name: Deploy and Verify
-        run: |
+        run: |  # Многострочная команда
+          # Создаем tar-архив с содержимым папки dist
+          # -C dist - сначала перейти в папку dist
+          # . - архивировать текущее содержимое (папки dist)
           tar -czf deploy.tar.gz -C dist .
+          
+          # Копируем архив на сервер через SCP
+          # -i ~/.ssh/id_rsa - используем наш приватный ключ
           scp -i ~/.ssh/id_rsa deploy.tar.gz ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/tmp/
+          
+          # Подключаемся к серверу и выполняем:
           ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
-            "mkdir -p /var/www/school-frontend/dist && \
-             tar -xzf /tmp/deploy.tar.gz -C /var/www/school-frontend/dist && \
-             chown -R arzhannikov:arzhannikov /var/www/school-frontend/dist && \
-             rm /tmp/deploy.tar.gz && \
-             ls -la /var/www/school-frontend/dist"
+            "mkdir -p /var/www/school-frontend/dist && \  # Создаем целевую папку
+             tar -xzf /tmp/deploy.tar.gz -C /var/www/school-frontend/dist && \  # Распаковываем
+             chown -R arzhannikov:arzhannikov /var/www/school-frontend/dist && \  # Меняем владельца
+             rm /tmp/deploy.tar.gz && \  # Удаляем временный архив
+             ls -la /var/www/school-frontend/dist"  # Проверяем содержимое
+          
+          # Удаляем локальный архив
           rm deploy.tar.gz
