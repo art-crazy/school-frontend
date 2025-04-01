@@ -21,9 +21,6 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Verify build files
-        run: ls -la dist/
-
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -41,39 +38,36 @@ jobs:
           name: school-frontend-build
           path: dist/
 
-      - name: Setup SSH environment
+      - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
-      - name: Verify SSH connection
+      - name: Deploy via SSH
         run: |
+          # Создаем временный tar-архив
+          tar -czf deploy.tar.gz -C dist .
+          
+          # Копируем на сервер
+          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
+            deploy.tar.gz \
+            ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:/tmp/
+          
+          # Распаковываем на сервере
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
-          ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
-          "echo 'SSH connection successful'"
-
-      - name: Clean remote directory
-        run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
-          ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
-          "rm -rf /var/www/school-frontend/*"
-
-      - name: Deploy files using rsync
-        uses: burnett01/rsync-deployments@5.2.3
-        with:
-          switches: -avz --chown=arzhannikov:arzhannikov --chmod=755
-          path: dist/
-          remote_path: /var/www/school-frontend/
-          remote_host: ${{ secrets.SERVER_IP }}
-          remote_user: ${{ secrets.SSH_USER }}
-          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          delete: true
-          recursive: true
+            ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
+            "tar -xzf /tmp/deploy.tar.gz -C /var/www/school-frontend \
+            && chown -R arzhannikov:arzhannikov /var/www/school-frontend \
+            && chmod -R 755 /var/www/school-frontend \
+            && rm /tmp/deploy.tar.gz"
+          
+          # Удаляем локальный архив
+          rm deploy.tar.gz
 
       - name: Verify deployment
         run: |
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
-          ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
-          "ls -la /var/www/school-frontend"
+            ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
+            "ls -la /var/www/school-frontend"
