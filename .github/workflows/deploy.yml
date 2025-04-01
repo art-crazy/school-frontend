@@ -100,7 +100,7 @@ jobs:
               ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
           
               location / {
-                  try_files \$uri \$uri/ /index.html?\$args;
+                  try_files \$uri /index.html =404;
               }
           }
           EOF
@@ -113,7 +113,7 @@ jobs:
         if: github.ref != 'refs/heads/master'
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOT'
-          set -e  # Прерывать при ошибках
+          set -e
 
           # 1. Очистка старых конфигов
           sudo rm -f /etc/nginx/sites-available/${{ steps.vars.outputs.DEPLOY_DOMAIN }}.conf
@@ -168,28 +168,20 @@ jobs:
               ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
           
               location / {
-                  try_files \$uri \$uri/ /index.html?\$args;
+                  try_files \$uri /index.html =404;
               }
 
+              error_page 404 /404.html;
               error_page 500 502 503 504 /50x.html;
-              location = /50x.html {
-                  root /usr/share/nginx/html;
-              }
-          
-              access_log /var/log/nginx/${{ steps.vars.outputs.DEPLOY_DOMAIN }}_access.log;
-              error_log /var/log/nginx/${{ steps.vars.outputs.DEPLOY_DOMAIN }}_error.log;
           }
           EOF
 
           # 5. Проверка и перезагрузка
           sudo nginx -t && sudo systemctl restart nginx
-          
-          # 6. Проверка доступности
-          curl -I https://${{ steps.vars.outputs.DEPLOY_DOMAIN }} || echo "Проверка завершилась с ошибкой"
           EOT
 
       - name: Verify deployment
         run: |
           echo "Testing deployment at ${{ steps.vars.outputs.DEPLOY_DOMAIN }}"
           ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} \
-            "curl -vk https://${{ steps.vars.outputs.DEPLOY_DOMAIN }} || echo 'Verification failed'"
+            "curl -I https://${{ steps.vars.outputs.DEPLOY_DOMAIN }} || echo 'Verification failed'"
