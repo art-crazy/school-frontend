@@ -106,16 +106,19 @@ jobs:
           EOF
           
           sudo ln -sf /etc/nginx/sites-available/mentor-hub.conf /etc/nginx/sites-enabled/
-          sudo nginx -t && sudo systemctl reload nginx
+          sudo nginx -t && sudo systemctl restart nginx
           EOT
 
       - name: Configure Nginx and SSL for branches
         if: github.ref != 'refs/heads/master'
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOT'
-          # Создаем временный конфиг для верификации
-          TEMP_CONF="/tmp/nginx_temp_${{ steps.vars.outputs.DEPLOY_DOMAIN }}.conf"
-          cat > \$TEMP_CONF << 'EOF'
+          # Удаляем старые конфиги если существуют
+          sudo rm -f /etc/nginx/sites-available/${{ steps.vars.outputs.DEPLOY_DOMAIN }}.conf
+          sudo rm -f /etc/nginx/sites-enabled/${{ steps.vars.outputs.DEPLOY_DOMAIN }}.conf
+
+          # Этап 1: Временный конфиг для верификации
+          sudo tee /etc/nginx/sites-available/${{ steps.vars.outputs.DEPLOY_DOMAIN }}.conf > /dev/null << 'EOF'
           server {
               listen 80;
               server_name ${{ steps.vars.outputs.DEPLOY_DOMAIN }};
@@ -130,12 +133,10 @@ jobs:
           }
           EOF
           
-          # Активируем временный конфиг
-          sudo mv \$TEMP_CONF /etc/nginx/sites-available/${{ steps.vars.outputs.DEPLOY_DOMAIN }}.conf
           sudo ln -sf /etc/nginx/sites-available/${{ steps.vars.outputs.DEPLOY_DOMAIN }}.conf /etc/nginx/sites-enabled/
-          sudo systemctl reload nginx
+          sudo systemctl restart nginx
           
-          # Выпускаем сертификат
+          # Этап 2: Получение сертификата
           sudo certbot certonly --nginx \
             -d ${{ steps.vars.outputs.DEPLOY_DOMAIN }} \
             --non-interactive \
@@ -144,7 +145,7 @@ jobs:
             --no-eff-email \
             --keep-until-expiring
           
-          # Создаем финальный конфиг с SSL
+          # Этап 3: Финальный конфиг с SSL
           sudo tee /etc/nginx/sites-available/${{ steps.vars.outputs.DEPLOY_DOMAIN }}.conf > /dev/null << 'EOF'
           server {
               listen 80;
@@ -167,10 +168,13 @@ jobs:
               location / {
                   try_files \$uri \$uri/ /index.html;
               }
+          
+              error_log /var/log/nginx/${{ steps.vars.outputs.DEPLOY_DOMAIN }}_error.log;
+              access_log /var/log/nginx/${{ steps.vars.outputs.DEPLOY_DOMAIN }}_access.log;
           }
           EOF
           
-          sudo nginx -t && sudo systemctl reload nginx
+          sudo nginx -t && sudo systemctl restart nginx
           EOT
 
       - name: Verify deployment
