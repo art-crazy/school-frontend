@@ -21,9 +21,6 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Show build files
-        run: ls -la dist/
-
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -41,20 +38,21 @@ jobs:
           name: school-frontend-build
           path: dist/
 
-      - name: Verify SSH connection
+      - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "echo 'SSH connection successful!'"
+          # Проверка подключения
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "echo 'SSH connection successful!'"
 
-      - name: Deploy to server
-        uses: appleboy/scp-action@v0.1.0
+      - name: Deploy using RSync
+        uses: burnett01/rsync-deployments@5.2.3
         with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "dist/*"
-          target: "/var/www/school-frontend"
-          strip_components: 1
+          switches: -avz --delete
+          path: dist/
+          remote_path: /var/www/school-frontend/
+          remote_host: ${{ secrets.SERVER_IP }}
+          remote_user: ${{ secrets.SSH_USER }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
