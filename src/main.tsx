@@ -8,6 +8,7 @@ import OfferAgreementPage from "@/pages/offerAgreementPage";
 import { YandexMetrika } from "@/shared/components/Yandex/YandexMetrika.tsx";
 import { AuthProvider, useAuth } from '@/shared/context/AuthContext';
 import AuthModal from '@/widgets/AuthModal/AuthModal';
+import VerifyEmail from './pages/VerifyEmail';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
@@ -44,6 +45,7 @@ const App = () => {
             <Route path="/services" element={<PrivateRoute><Home /></PrivateRoute>} />
             <Route path="/reviews" element={<PrivateRoute><Home /></PrivateRoute>} />
             <Route path="/faq" element={<PrivateRoute><Home /></PrivateRoute>} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
           </Routes>
           <AuthModal 
             isOpen={isAuthModalOpen} 
