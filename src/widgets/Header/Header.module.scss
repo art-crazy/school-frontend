@@ -1,4 +1,4 @@
-@use '@/styles/vars' as *; /* Импортируем переменные */
+@use '@/styles/vars' as *;
 
 .header {
   height: 64px;
@@ -7,9 +7,10 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 1px 4px rgba(255, 255, 255, 0.1); /* Добавляем тень */
+  box-shadow: 0 1px 4px rgba(255, 255, 255, 0.1);
   padding: 0 40px;
-
+  flex-shrink: 0;
+  position: relative;
 }
 
 .button {
