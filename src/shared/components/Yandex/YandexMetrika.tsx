@@ -29,8 +29,8 @@ interface YandexMetrikaConfig {
 }
 
 const DEFAULT_CONFIG: YandexMetrikaConfig = {
-    id: process.env.REACT_APP_YANDEX_METRIKA_ID
-        ? Number(process.env.REACT_APP_YANDEX_METRIKA_ID)
+    id: import.meta.env.VITE_YANDEX_METRIKA_ID
+        ? Number(import.meta.env.VITE_YANDEX_METRIKA_ID)
         : 0, // 0 отключает метрику в development
     options: {
         clickmap: true,

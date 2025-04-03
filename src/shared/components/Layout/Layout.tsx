@@ -1,14 +1,17 @@
-// src/components/Layout.tsx
 import React from 'react';
-import Header from "@/shared/components/Header";
 import Footer from "@/shared/components/Footer";
 import ScrollToTop from "@/shared/components/ScrollToTop";
+import Header from "@/widgets/Header/Header.tsx";
 
+interface LayoutProps {
+  children: React.ReactNode;
+  onAuthModeChange: (mode: 'login' | 'register') => void;
+}
 
-const Layout = ({ children }: { children: React.ReactNode }) => {
+const Layout = ({ children, onAuthModeChange }: LayoutProps) => {
     return (
         <>
-            <Header />
+            <Header onAuthModeChange={onAuthModeChange} />
             <main>{children}</main>
             <ScrollToTop />
             <Footer />
