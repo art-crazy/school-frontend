@@ -23,6 +23,31 @@
   font-weight: 400;
 }
 
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-right: 10px;
+}
+
+.userAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.userName {
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+}
+
+.userEmail {
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+}
 
 @media screen and (min-width: 650px) and (pointer: fine) {
   .header {

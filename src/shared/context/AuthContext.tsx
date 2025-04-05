@@ -6,6 +6,9 @@ interface User {
   email: string;
   role: string;
   isEmailVerified: boolean;
+  username?: string;
+  firstName?: string;
+  photoUrl?: string;
 }
 
 interface LoginData {
@@ -101,8 +104,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setError(null);
       const response = await authenticateWithTelegram(data);
       const userData = response.user;
-      setUser(userData);
-      localStorage.setItem(AUTH_KEY, JSON.stringify(userData));
+      
+      // Добавляем дополнительные данные от Telegram
+      const enhancedUserData = {
+        ...userData,
+        username: data.username,
+        firstName: data.first_name,
+        photoUrl: data.photo_url
+      };
+      
+      setUser(enhancedUserData);
+      localStorage.setItem(AUTH_KEY, JSON.stringify(enhancedUserData));
     } catch (error) {
       console.error('Ошибка при входе через Telegram:', error);
       setError(error instanceof Error ? error.message : 'Произошла ошибка при входе через Telegram');

@@ -14,6 +14,9 @@ const Header = ({ onAuthModeChange }: HeaderProps) => {
     window.location.href = '/';
   };
 
+  // Определяем, является ли пользователь Telegram-пользователем
+  const isTelegramUser = user?.username && user?.photoUrl;
+
   return (
     <header className={styles.header}>
       <a
@@ -28,7 +31,20 @@ const Header = ({ onAuthModeChange }: HeaderProps) => {
         <div>Загрузка...</div>
       ) : isAuthenticated ? (
         <>
-          <span className={styles.button}>{user?.email}</span>
+          <div className={styles.userInfo}>
+            {isTelegramUser ? (
+              <>
+                <img 
+                  src={user.photoUrl} 
+                  alt={user.username} 
+                  className={styles.userAvatar} 
+                />
+                <span className={styles.userName}>{user.username}</span>
+              </>
+            ) : (
+              <span className={styles.userEmail}>{user?.email}</span>
+            )}
+          </div>
           <button onClick={logout} className={styles.button}>
             Выйти
           </button>
