@@ -3,7 +3,6 @@ import { useAuth } from '@/shared/context/AuthContext';
 import styles from './AuthModal.module.scss';
 import { useNavigate } from 'react-router-dom';
 import { Button, Divider } from '@mui/material';
-import { API_URL } from '@/shared/api/config';
 import { TelegramAuthData } from '@/shared/api/auth';
 
 // Объявляем тип для window.onTelegramAuth
@@ -64,11 +63,26 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
         if (!user || !user.id) {
           throw new Error('Неверные данные от Telegram');
         }
-        loginWithTelegram(user);
-        onClose();
+
+        // Показываем индикатор загрузки
+        setLoading(true);
+        setError('');
+
+        // Вызываем функцию аутентификации
+        loginWithTelegram(user)
+          .then(() => {
+            console.log('Telegram auth successful');
+            onClose();
+          })
+          .catch((err) => {
+            console.error('Ошибка при обработке данных от Telegram:', err);
+            setError('Ошибка при входе через Telegram. Пожалуйста, попробуйте еще раз.');
+            setLoading(false);
+          });
       } catch (err) {
         console.error('Ошибка при обработке данных от Telegram:', err);
         setError('Ошибка при входе через Telegram');
+        setLoading(false);
       }
     };
 
@@ -178,4 +192,4 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
       </div>
     </div>
   );
-} 
+}

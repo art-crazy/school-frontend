@@ -1,34 +1,14 @@
 import React, { createContext, useContext, useState } from 'react';
-import { login, register, logout, LoginData as ApiLoginData, RegisterData as ApiRegisterData, authenticateWithTelegram, TelegramAuthData } from '../api/auth';
-
-interface User {
-  id: number;
-  email: string;
-  role: string;
-  isEmailVerified: boolean;
-  username?: string;
-  firstName?: string;
-  photoUrl?: string;
-}
-
-interface LoginData {
-  email: string;
-  password: string;
-}
-
-interface RegisterData {
-  email: string;
-  password: string;
-}
+import { login, register, logout, LoginData as ApiLoginData, RegisterData as ApiRegisterData, TelegramAuthData, loginWithTelegram, UserData } from '../api/auth';
 
 interface AuthContextType {
-  user: User | null;
+  user: UserData | null;
   loading: boolean;
   error: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (data: LoginData) => Promise<void>;
-  register: (data: RegisterData) => Promise<void>;
+  login: (data: ApiLoginData) => Promise<void>;
+  register: (data: ApiRegisterData) => Promise<void>;
   logout: () => Promise<void>;
   loginWithTelegram: (data: TelegramAuthData) => Promise<void>;
 }
@@ -38,45 +18,41 @@ const AUTH_KEY = 'auth_data';
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(() => {
+  const [user, setUser] = useState<UserData | null>(() => {
     const savedAuth = localStorage.getItem(AUTH_KEY);
     return savedAuth ? JSON.parse(savedAuth) : null;
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(!!user);
 
-  const handleLogin = async (data: LoginData) => {
+  const handleLogin = async (data: ApiLoginData) => {
     try {
       setLoading(true);
-      setError(null);
-      const response = await login(data as ApiLoginData);
-      const userData = response.user;
-      if (!userData.isEmailVerified) {
-        throw new Error('Email не подтвержден. Пожалуйста, подтвердите email для входа.');
-      }
+      setError('');
+      const response = await login(data);
+      const userData = response.user as UserData;
       setUser(userData);
-      localStorage.setItem(AUTH_KEY, JSON.stringify(userData));
-    } catch (error) {
-      console.error('Ошибка при входе:', error);
-      setError(error instanceof Error ? error.message : 'Произошла ошибка при входе');
-      throw error;
+      setIsAuthenticated(true);
+    } catch (err) {
+      console.error('Error during login:', err);
+      setError(err instanceof Error ? err.message : 'Ошибка при входе');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRegister = async (data: RegisterData) => {
+  const handleRegister = async (data: ApiRegisterData) => {
     try {
       setLoading(true);
-      setError(null);
-      const response = await register(data as ApiRegisterData);
-      const userData = response.user;
+      setError('');
+      const response = await register(data);
+      const userData = response.user as UserData;
       setUser(userData);
-      localStorage.setItem(AUTH_KEY, JSON.stringify(userData));
-    } catch (error) {
-      console.error('Ошибка при регистрации:', error);
-      setError(error instanceof Error ? error.message : 'Произошла ошибка при регистрации');
-      throw error;
+      setIsAuthenticated(true);
+    } catch (err) {
+      console.error('Error during registration:', err);
+      setError(err instanceof Error ? err.message : 'Ошибка при регистрации');
     } finally {
       setLoading(false);
     }
@@ -101,24 +77,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const handleLoginWithTelegram = async (data: TelegramAuthData) => {
     try {
       setLoading(true);
-      setError(null);
-      const response = await authenticateWithTelegram(data);
-      const userData = response.user;
-      
-      // Добавляем дополнительные данные от Telegram
-      const enhancedUserData = {
-        ...userData,
-        username: data.username,
-        firstName: data.first_name,
-        photoUrl: data.photo_url
-      };
-      
-      setUser(enhancedUserData);
-      localStorage.setItem(AUTH_KEY, JSON.stringify(enhancedUserData));
-    } catch (error) {
-      console.error('Ошибка при входе через Telegram:', error);
-      setError(error instanceof Error ? error.message : 'Произошла ошибка при входе через Telegram');
-      throw error;
+      setError('');
+
+      const userData = await loginWithTelegram(data);
+
+      if (userData) {
+        const fullUserData: UserData = {
+          id: userData.id,
+          email: data.username || '',
+          username: userData.username,
+          firstName: userData.firstName,
+          photoUrl: userData.photoUrl,
+          role: 'user',
+          isEmailVerified: true,
+        };
+        setUser(fullUserData);
+        setIsAuthenticated(true);
+      }
+    } catch (err) {
+      console.error('Error during Telegram login:', err);
+      setError(err instanceof Error ? err.message : 'Ошибка при входе через Telegram');
     } finally {
       setLoading(false);
     }
@@ -128,7 +106,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     loading,
     error,
-    isAuthenticated: !!user,
+    isAuthenticated,
     isLoading: loading,
     login: handleLogin,
     register: handleRegister,

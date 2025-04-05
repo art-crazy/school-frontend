@@ -11,8 +11,11 @@ export interface RegisterData {
 }
 
 export interface UserData {
-  id: number;
+  id: string;
   email: string;
+  username: string;
+  firstName: string;
+  photoUrl?: string;
   role: string;
   isEmailVerified: boolean;
 }
@@ -35,6 +38,13 @@ export interface TelegramAuthData {
   photo_url?: string;
   auth_date: string;
   hash: string;
+}
+
+export interface TelegramAuthResponse {
+  id: string;
+  username: string;
+  firstName: string;
+  photoUrl?: string;
 }
 
 const handleResponse = async (response: Response) => {
@@ -101,4 +111,31 @@ export const authenticateWithTelegram = async (data: TelegramAuthData): Promise<
     credentials: 'include',
   });
   return handleResponse(response);
+};
+
+export const loginWithTelegram = async (data: TelegramAuthData): Promise<TelegramAuthResponse> => {
+  try {
+    console.log('Sending Telegram auth data:', data);
+    const response = await fetch(`${API_URL}/auth/telegram`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Telegram auth error:', errorData);
+      throw new Error(errorData.message || 'Ошибка при входе через Telegram');
+    }
+
+    const userData = await response.json();
+    console.log('Telegram auth successful:', userData);
+    return userData;
+  } catch (error) {
+    console.error('Error during Telegram authentication:', error);
+    throw error;
+  }
 };
