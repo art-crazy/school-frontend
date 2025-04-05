@@ -40,6 +40,8 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
     // Добавляем обработчики событий для отладки
     script.onload = () => {
       console.log('Telegram script loaded successfully');
+      // Очищаем ошибку, если она была установлена ранее
+      setError('');
     };
     script.onerror = (error) => {
       console.error('Error loading Telegram script:', error);
@@ -51,6 +53,8 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
       console.log('Found Telegram container');
       container.innerHTML = '';
       container.appendChild(script);
+      // Очищаем ошибку, если контейнер найден
+      setError('');
     } else {
       console.error('Telegram container not found');
       setError('Ошибка при инициализации виджета Telegram');
@@ -76,8 +80,25 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
           })
           .catch((err) => {
             console.error('Ошибка при обработке данных от Telegram:', err);
-            setError('Ошибка при входе через Telegram. Пожалуйста, попробуйте еще раз.');
-            setLoading(false);
+            // Если ошибка связана с SMTP, пробуем войти еще раз
+            if (err.message.includes('smtp')) {
+              console.log('Пробуем войти еще раз после ошибки SMTP');
+              setTimeout(() => {
+                loginWithTelegram(user)
+                  .then(() => {
+                    console.log('Telegram auth successful after retry');
+                    onClose();
+                  })
+                  .catch((retryErr) => {
+                    console.error('Ошибка при повторной попытке входа:', retryErr);
+                    setError('Ошибка при входе через Telegram. Пожалуйста, попробуйте еще раз.');
+                    setLoading(false);
+                  });
+              }, 1000); // Ждем 1 секунду перед повторной попыткой
+            } else {
+              setError('Ошибка при входе через Telegram. Пожалуйста, попробуйте еще раз.');
+              setLoading(false);
+            }
           });
       } catch (err) {
         console.error('Ошибка при обработке данных от Telegram:', err);
@@ -180,6 +201,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
         <div className={styles.telegramLogin}>
           {/* Скрипт будет добавлен через useEffect */}
         </div>
+        {loading && <div className={styles.loading}>Загрузка...</div>}
         <div className={styles.switchMode}>
           <button
             className={styles.switchButton}
