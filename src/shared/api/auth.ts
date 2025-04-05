@@ -14,6 +14,7 @@ export interface UserData {
   id: number;
   email: string;
   role: string;
+  isEmailVerified: boolean;
 }
 
 export interface AuthResponse {
@@ -63,6 +64,27 @@ export const logout = async (): Promise<AuthResponse> => {
   const response = await fetch(`${API_URL}/auth/logout`, {
     method: 'POST',
     credentials: 'include',
+  });
+  return handleResponse(response);
+};
+
+export const verifyEmail = async (token: string): Promise<AuthResponse> => {
+  const response = await fetch(`${API_URL}/auth/verify-email?token=${token}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  return handleResponse(response);
+};
+
+export const resendVerificationEmail = async (email: string): Promise<AuthResponse> => {
+  const response = await fetch(`${API_URL}/auth/resend-verification`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email }),
   });
   return handleResponse(response);
 };

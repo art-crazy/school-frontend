@@ -9,14 +9,15 @@ import { YandexMetrika } from "@/shared/components/Yandex/YandexMetrika.tsx";
 import { AuthProvider, useAuth } from '@/shared/context/AuthContext';
 import AuthModal from '@/widgets/AuthModal/AuthModal';
 import VerifyEmail from './pages/VerifyEmail';
+import EmailVerification from './pages/EmailVerification';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
-  
+
   if (loading) {
     return <div>Загрузка...</div>;
   }
-  
+
   return user ? <>{children}</> : <Navigate to="/login" />;
 };
 
@@ -46,9 +47,10 @@ const App = () => {
             <Route path="/reviews" element={<PrivateRoute><Home /></PrivateRoute>} />
             <Route path="/faq" element={<PrivateRoute><Home /></PrivateRoute>} />
             <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route path="/email-verification" element={<EmailVerification />} />
           </Routes>
-          <AuthModal 
-            isOpen={isAuthModalOpen} 
+          <AuthModal
+            isOpen={isAuthModalOpen}
             onClose={() => setIsAuthModalOpen(false)}
             initialMode={authMode}
           />

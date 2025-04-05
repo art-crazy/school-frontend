@@ -5,6 +5,7 @@ interface User {
   id: number;
   email: string;
   role: string;
+  isEmailVerified: boolean;
 }
 
 interface LoginData {
@@ -46,6 +47,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setError(null);
       const response = await login(data as ApiLoginData);
       const userData = response.user;
+      if (!userData.isEmailVerified) {
+        throw new Error('Email не подтвержден. Пожалуйста, подтвердите email для входа.');
+      }
       setUser(userData);
       localStorage.setItem(AUTH_KEY, JSON.stringify(userData));
     } catch (error) {

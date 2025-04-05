@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/shared/context/AuthContext';
 import styles from './AuthModal.module.scss';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@mui/material';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -12,22 +14,53 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
   const [isLogin, setIsLogin] = useState(initialMode === 'login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string | React.ReactNode>('');
+  const [loading, setLoading] = useState(false);
   const { login, register } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
     try {
       if (isLogin) {
         await login({ email, password });
+        onClose();
       } else {
         await register({ email, password });
+        onClose();
+        navigate('/email-verification', { state: { email } });
       }
-      onClose();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Произошла ошибка');
+    } catch (err: any) {
+      if (err.message?.includes('Email не подтвержден')) {
+        setError(
+          <div>
+            Email не подтвержден. Пожалуйста, подтвердите email для входа.
+            <Button
+              variant="text"
+              onClick={() => {
+                onClose();
+                navigate('/email-verification', { state: { email } });
+              }}
+              sx={{ ml: 1, p: 0, minWidth: 'auto' }}
+            >
+              Отправить письмо повторно
+            </Button>
+          </div>
+        );
+      } else {
+        const errorMessage = err.message?.split(': ')?.[1];
+        try {
+          const errorData = JSON.parse(errorMessage);
+          setError(errorData.message);
+        } catch {
+          setError(errorMessage || 'Произошла ошибка');
+        }
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -64,8 +97,8 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
             />
           </div>
           {error && <div className={styles.error}>{error}</div>}
-          <button className={styles.button} type="submit">
-            {isLogin ? 'Войти' : 'Зарегистрироваться'}
+          <button className={styles.button} type="submit" disabled={loading}>
+            {loading ? 'Загрузка...' : (isLogin ? 'Войти' : 'Зарегистрироваться')}
           </button>
         </form>
         <div className={styles.switchMode}>
