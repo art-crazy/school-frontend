@@ -34,12 +34,12 @@ const Header = ({ onAuthModeChange }: HeaderProps) => {
           <div className={styles.userInfo}>
             {isTelegramUser ? (
               <>
-                <img 
-                  src={user.photoUrl} 
-                  alt={user.username} 
-                  className={styles.userAvatar} 
+                <img
+                  src={user.photoUrl}
+                  alt={user.username}
+                  className={styles.userAvatar}
                 />
-                <span className={styles.userName}>{user.username}</span>
+                <span className={styles.userName}>@{user.username}</span>
               </>
             ) : (
               <span className={styles.userEmail}>{user?.email}</span>
