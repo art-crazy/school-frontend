@@ -5,6 +5,13 @@ import { resendVerificationEmail } from '@/shared/api/auth';
 
 const RESEND_COOLDOWN = 120; // 2 минуты в секундах
 
+// Определяем интерфейс для ошибки
+interface ApiError {
+  message: string;
+  error?: string;
+  statusCode?: number;
+}
+
 export default function EmailVerification() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -48,10 +55,18 @@ export default function EmailVerification() {
       setCountdown(RESEND_COOLDOWN);
       // Сохраняем время отправки в localStorage
       localStorage.setItem(`lastEmailSent_${email}`, Date.now().toString());
-    } catch (err: any) {
-      const errorMessage = err.message.split(': ')[1];
-      const errorData = JSON.parse(errorMessage);
-      setError(errorData.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        const errorMessage = err.message.split(': ')[1];
+        try {
+          const errorData = JSON.parse(errorMessage) as ApiError;
+          setError(errorData.message);
+        } catch {
+          setError('Произошла ошибка при отправке письма');
+        }
+      } else {
+        setError('Произошла неизвестная ошибка');
+      }
     } finally {
       setLoading(false);
     }
