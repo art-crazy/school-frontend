@@ -63,11 +63,11 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
         if (!user || !user.id) {
           throw new Error('Неверные данные от Telegram');
         }
-
+        
         // Показываем индикатор загрузки
         setLoading(true);
         setError('');
-
+        
         // Вызываем функцию аутентификации
         loginWithTelegram(user)
           .then(() => {

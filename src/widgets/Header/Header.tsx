@@ -15,7 +15,7 @@ const Header = ({ onAuthModeChange }: HeaderProps) => {
   };
 
   // Определяем, является ли пользователь Telegram-пользователем
-  const isTelegramUser = user?.username && user?.photoUrl;
+  const isTelegramUser = user?.username && user.username.startsWith('@');
 
   return (
     <header className={styles.header}>
@@ -34,12 +34,14 @@ const Header = ({ onAuthModeChange }: HeaderProps) => {
           <div className={styles.userInfo}>
             {isTelegramUser ? (
               <>
-                <img
-                  src={user.photoUrl}
-                  alt={user.username}
-                  className={styles.userAvatar}
-                />
-                <span className={styles.userName}>@{user.username}</span>
+                {user.photoUrl && (
+                  <img
+                    src={user.photoUrl}
+                    alt={user.username}
+                    className={styles.userAvatar}
+                  />
+                )}
+                <span className={styles.userName}>{user.username}</span>
               </>
             ) : (
               <span className={styles.userEmail}>{user?.email}</span>

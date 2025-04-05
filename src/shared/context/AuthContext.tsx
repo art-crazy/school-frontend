@@ -78,16 +78,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setLoading(true);
       setError('');
-
+      
       const userData = await loginWithTelegram(data);
-
+      
       if (userData) {
         const fullUserData: UserData = {
           id: userData.id,
-          email: data.username || '',
-          username: userData.username,
+          email: data.username ? `@${data.username}` : '',
+          username: data.username ? `@${data.username}` : '',
           firstName: userData.firstName,
-          photoUrl: userData.photoUrl,
+          photoUrl: data.photo_url,
           role: 'user',
           isEmailVerified: true,
         };
