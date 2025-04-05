@@ -28,6 +28,15 @@ export interface UserSession {
   refreshToken: string;
 }
 
+export interface TelegramAuthData {
+  id: number;
+  first_name: string;
+  username?: string;
+  photo_url?: string;
+  auth_date: string;
+  hash: string;
+}
+
 const handleResponse = async (response: Response) => {
   if (!response.ok) {
     const error = await response.text();
@@ -75,6 +84,18 @@ export const resendVerificationEmail = async (email: string): Promise<AuthRespon
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ email }),
+  });
+  return handleResponse(response);
+};
+
+export const authenticateWithTelegram = async (data: TelegramAuthData): Promise<AuthResponse> => {
+  const response = await fetch(`${API_URL}/auth/telegram`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify(data),
   });
   return handleResponse(response);
 };

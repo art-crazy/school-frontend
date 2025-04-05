@@ -146,4 +146,31 @@
       text-decoration: underline;
     }
   }
+}
+
+.switchButton {
+  background: none;
+  border: none;
+  color: #1976d2;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0.5rem;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.telegramLogin {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+  min-height: 50px;
+  
+  :global {
+    .telegram-login {
+      margin: 0 auto;
+      display: block !important;
+    }
+  }
 } 

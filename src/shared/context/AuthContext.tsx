@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
-import { login, register, logout, LoginData as ApiLoginData, RegisterData as ApiRegisterData } from '../api/auth';
+import { login, register, logout, LoginData as ApiLoginData, RegisterData as ApiRegisterData, authenticateWithTelegram, TelegramAuthData } from '../api/auth';
 
 interface User {
   id: number;
@@ -27,6 +27,7 @@ interface AuthContextType {
   login: (data: LoginData) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
+  loginWithTelegram: (data: TelegramAuthData) => Promise<void>;
 }
 
 const AUTH_KEY = 'auth_data';
@@ -94,6 +95,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const handleLoginWithTelegram = async (data: TelegramAuthData) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await authenticateWithTelegram(data);
+      const userData = response.user;
+      setUser(userData);
+      localStorage.setItem(AUTH_KEY, JSON.stringify(userData));
+    } catch (error) {
+      console.error('Ошибка при входе через Telegram:', error);
+      setError(error instanceof Error ? error.message : 'Произошла ошибка при входе через Telegram');
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const value = {
     user,
     loading,
@@ -103,6 +121,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     login: handleLogin,
     register: handleRegister,
     logout: handleLogout,
+    loginWithTelegram: handleLoginWithTelegram,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

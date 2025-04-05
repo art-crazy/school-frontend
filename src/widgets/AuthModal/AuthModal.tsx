@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/shared/context/AuthContext';
 import styles from './AuthModal.module.scss';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@mui/material';
+import { Button, Divider } from '@mui/material';
+import { API_URL } from '@/shared/api/config';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -16,8 +17,60 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | React.ReactNode>('');
   const [loading, setLoading] = useState(false);
-  const { login, register } = useAuth();
+  const { login, register, loginWithTelegram } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Загружаем скрипт Telegram
+    const script = document.createElement('script');
+    script.src = 'https://telegram.org/js/telegram-widget.js?22';
+    script.setAttribute('data-telegram-login', 'MentorHubAuthBot');
+    script.setAttribute('data-size', 'large');
+    script.setAttribute('data-auth-url', `${API_URL}/auth/telegram`);
+    script.setAttribute('data-request-access', 'write');
+    script.async = true;
+
+    // Добавляем обработчики событий для отладки
+    script.onload = () => {
+      console.log('Telegram script loaded successfully');
+    };
+    script.onerror = (error) => {
+      console.error('Error loading Telegram script:', error);
+    };
+
+    const container = document.querySelector(`.${styles.telegramLogin}`);
+    if (container) {
+      console.log('Found Telegram container');
+      container.innerHTML = '';
+      container.appendChild(script);
+    } else {
+      console.error('Telegram container not found');
+    }
+
+    // Добавляем обработчик для получения данных от Telegram
+    const handleTelegramAuth = (event: MessageEvent) => {
+      if (event.origin !== 'https://telegram.org') return;
+      
+      try {
+        const data = event.data;
+        if (data.event === 'telegram_login') {
+          loginWithTelegram(data);
+          onClose();
+        }
+      } catch (err) {
+        console.error('Ошибка при обработке данных от Telegram:', err);
+        setError('Ошибка при входе через Telegram');
+      }
+    };
+
+    window.addEventListener('message', handleTelegramAuth);
+    return () => {
+      window.removeEventListener('message', handleTelegramAuth);
+      if (container) {
+        container.innerHTML = '';
+      }
+    };
+  }, [loginWithTelegram, onClose, API_URL]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,15 +151,20 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
           </div>
           {error && <div className={styles.error}>{error}</div>}
           <button className={styles.button} type="submit" disabled={loading}>
-            {loading ? 'Загрузка...' : (isLogin ? 'Войти' : 'Зарегистрироваться')}
+            {isLogin ? 'Войти' : 'Зарегистрироваться'}
           </button>
         </form>
+        <Divider sx={{ my: 2 }}>или</Divider>
+        <div className={styles.telegramLogin}>
+          {/* Скрипт будет добавлен через useEffect */}
+        </div>
         <div className={styles.switchMode}>
           <button
-            type="button"
+            className={styles.switchButton}
             onClick={() => setIsLogin(!isLogin)}
+            type="button"
           >
-            {isLogin ? 'Нет аккаунта? Зарегистрироваться' : 'Уже есть аккаунт? Войти'}
+            {isLogin ? 'Создать аккаунт' : 'Уже есть аккаунт?'}
           </button>
         </div>
       </div>
