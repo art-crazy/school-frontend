@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Container, Typography, Button, Alert, Box, CircularProgress } from '@mui/material';
-import { resendVerificationEmail, verifyEmail } from '@/shared/api/auth';
+import { resendVerificationEmail } from '@/shared/api/auth';
 
 const RESEND_COOLDOWN = 120; // 2 минуты в секундах
 
@@ -37,11 +37,11 @@ export default function EmailVerification() {
 
   const handleResendEmail = async () => {
     if (!email || countdown > 0) return;
-    
+
     setLoading(true);
     setError('');
     setSuccess('');
-    
+
     try {
       await resendVerificationEmail(email);
       setSuccess('Письмо успешно отправлено');
@@ -63,8 +63,8 @@ export default function EmailVerification() {
         <Alert severity="error">
           Email не найден. Пожалуйста, зарегистрируйтесь снова.
         </Alert>
-        <Button 
-          variant="contained" 
+        <Button
+          variant="contained"
           onClick={() => navigate('/')}
           sx={{ mt: 2 }}
         >
@@ -79,7 +79,7 @@ export default function EmailVerification() {
       <Typography variant="h4" component="h1" gutterBottom>
         Подтверждение email
       </Typography>
-      
+
       <Typography paragraph>
         На ваш email {email} было отправлено письмо с подтверждением.
         Пожалуйста, проверьте почту и перейдите по ссылке в письме.
@@ -99,16 +99,16 @@ export default function EmailVerification() {
 
       <Box sx={{ mt: 2 }}>
         {countdown > 0 ? (
-          <Box sx={{ 
-            display: 'flex', 
+          <Box sx={{
+            display: 'flex',
             alignItems: 'center',
             color: 'primary.main',
             fontWeight: 'medium'
           }}>
-            <CircularProgress 
-              size={16} 
-              thickness={4} 
-              sx={{ mr: 1 }} 
+            <CircularProgress
+              size={16}
+              thickness={4}
+              sx={{ mr: 1 }}
             />
             <Typography variant="body2">
               Следующая отправка будет доступна через: {countdown} сек
