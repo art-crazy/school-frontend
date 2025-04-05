@@ -4,6 +4,14 @@ import styles from './AuthModal.module.scss';
 import { useNavigate } from 'react-router-dom';
 import { Button, Divider } from '@mui/material';
 import { API_URL } from '@/shared/api/config';
+import { TelegramAuthData } from '@/shared/api/auth';
+
+// Объявляем тип для window.onTelegramAuth
+declare global {
+  interface Window {
+    onTelegramAuth: (user: TelegramAuthData) => void;
+  }
+}
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -47,28 +55,23 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
       console.error('Telegram container not found');
     }
 
-    // Добавляем обработчик для получения данных от Telegram
-    const handleTelegramAuth = (event: MessageEvent) => {
-      if (event.origin !== 'https://telegram.org') return;
-      
+    // Добавляем глобальную функцию для обработки данных от Telegram
+    window.onTelegramAuth = (user: any) => {
       try {
-        const data = event.data;
-        if (data.event === 'telegram_login') {
-          loginWithTelegram(data);
-          onClose();
-        }
+        console.log('Telegram auth data received:', user);
+        loginWithTelegram(user);
+        onClose();
       } catch (err) {
         console.error('Ошибка при обработке данных от Telegram:', err);
         setError('Ошибка при входе через Telegram');
       }
     };
 
-    window.addEventListener('message', handleTelegramAuth);
     return () => {
-      window.removeEventListener('message', handleTelegramAuth);
       if (container) {
         container.innerHTML = '';
       }
+      window.onTelegramAuth = () => {}; // Очищаем обработчик пустой функцией
     };
   }, [loginWithTelegram, onClose, API_URL]);
 

@@ -84,47 +84,70 @@ jobs:
           server {
               listen 80;
               server_name mentor-hub.ru www.mentor-hub.ru;
-              return 301 https://\$host\$request_uri;
+              return 301 https://$host$request_uri;
           }
           
           server {
               listen 443 ssl http2;
               server_name mentor-hub.ru www.mentor-hub.ru;
           
-              root /var/www/mentor-hub;
-              index index.html;
-          
+              # SSL сертификаты
               ssl_certificate /etc/letsencrypt/live/mentor-hub.ru/fullchain.pem;
               ssl_certificate_key /etc/letsencrypt/live/mentor-hub.ru/privkey.pem;
+          
+              # Подключаем рекомендованные настройки Let's Encrypt
               include /etc/letsencrypt/options-ssl-nginx.conf;
               ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
           
-              include /etc/nginx/mime.types;
-              default_type application/octet-stream;
-
+              # Фронтенд
               location / {
-                  try_files $uri /index.html =404;
+                  root /var/www/mentor-hub;
+                  try_files $uri $uri/ /index.html;
+          
+                  # Более мягкие настройки кэширования
+                  add_header Cache-Control "public, max-age=3600";
+          
+                  # Добавляем заголовки безопасности
+                  add_header X-Frame-Options "SAMEORIGIN";
+                  add_header X-Content-Type-Options "nosniff";
               }
-
-              location ~* \.(js|mjs)$ {
-                  add_header Content-Type application/javascript;
+          
+              # API
+              location /api/ {
+                  proxy_pass http://localhost:3000/;
+                  proxy_http_version 1.1;
+                  proxy_set_header Upgrade $http_upgrade;
+                  proxy_set_header Connection 'upgrade';
+                  proxy_set_header Host $host;
+                  proxy_cache_bypass $http_upgrade;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                  proxy_set_header X-Forwarded-Proto $scheme;
+          
+                  # Таймауты можно уменьшить для стандартных API
+                  proxy_connect_timeout 30s;
+                  proxy_send_timeout 30s;
+                  proxy_read_timeout 30s;
               }
-
-              location ~* \.css$ {
-                  add_header Content-Type text/css;
-              }
-
-              location ~* \.(?:jpg|jpeg|png|gif|ico|svg|webp|woff2?|ttf|eot)$ {
+          
+              # Статика
+              location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|webp)$ {
+                  root /var/www/mentor-hub;
                   expires 1y;
-                  add_header Cache-Control "public, max-age=31536000, immutable";
                   access_log off;
+                  add_header Cache-Control "public, max-age=31536000, immutable";
               }
-
-              location ~ /\. {
+          
+              # Защита скрытых файлов
+              location ~ /\.(?!well-known) {
                   deny all;
                   access_log off;
                   log_not_found off;
               }
+          
+              # Логи
+              access_log /var/log/nginx/mentor-hub.access.log;
+              error_log /var/log/nginx/mentor-hub.error.log;
           }
           EOF
           
