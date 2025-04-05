@@ -89,13 +89,16 @@ export const resendVerificationEmail = async (email: string): Promise<AuthRespon
 };
 
 export const authenticateWithTelegram = async (data: TelegramAuthData): Promise<AuthResponse> => {
-  const response = await fetch(`${API_URL}/auth/telegram`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+  const params = new URLSearchParams();
+  Object.entries(data).forEach(([key, value]) => {
+    if (value !== undefined) {
+      params.append(key, value.toString());
+    }
+  });
+
+  const response = await fetch(`${API_URL}/auth/telegram?${params.toString()}`, {
+    method: 'GET',
     credentials: 'include',
-    body: JSON.stringify(data),
   });
   return handleResponse(response);
 };

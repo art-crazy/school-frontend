@@ -34,7 +34,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
     script.src = 'https://telegram.org/js/telegram-widget.js?22';
     script.setAttribute('data-telegram-login', 'MentorHubAuthBot');
     script.setAttribute('data-size', 'large');
-    script.setAttribute('data-auth-url', `${API_URL}/auth/telegram`);
+    script.setAttribute('data-onauth', 'onTelegramAuth(user)');
     script.setAttribute('data-request-access', 'write');
     script.async = true;
 
@@ -44,6 +44,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
     };
     script.onerror = (error) => {
       console.error('Error loading Telegram script:', error);
+      setError('Ошибка при загрузке виджета Telegram');
     };
 
     const container = document.querySelector(`.${styles.telegramLogin}`);
@@ -53,12 +54,16 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
       container.appendChild(script);
     } else {
       console.error('Telegram container not found');
+      setError('Ошибка при инициализации виджета Telegram');
     }
 
     // Добавляем глобальную функцию для обработки данных от Telegram
-    window.onTelegramAuth = (user: any) => {
+    window.onTelegramAuth = (user: TelegramAuthData) => {
       try {
         console.log('Telegram auth data received:', user);
+        if (!user || !user.id) {
+          throw new Error('Неверные данные от Telegram');
+        }
         loginWithTelegram(user);
         onClose();
       } catch (err) {
@@ -73,7 +78,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
       }
       window.onTelegramAuth = () => {}; // Очищаем обработчик пустой функцией
     };
-  }, [loginWithTelegram, onClose, API_URL]);
+  }, [loginWithTelegram, onClose]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
