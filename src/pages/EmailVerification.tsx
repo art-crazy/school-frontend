@@ -95,7 +95,7 @@ export default function EmailVerification() {
         Подтверждение email
       </Typography>
 
-      <Typography paragraph>
+      <Typography variant="body1" sx={{ mb: 2 }}>
         На ваш email {email} было отправлено письмо с подтверждением.
         Пожалуйста, проверьте почту и перейдите по ссылке в письме.
       </Typography>
