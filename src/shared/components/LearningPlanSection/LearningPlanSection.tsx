@@ -70,7 +70,7 @@ const LearningPlanSection = () => {
                             }}
                         >
                             {index + 1}. {section.title}
-                            {activeIndex === index ? <FaChevronUp/> : <FaChevronDown/>}
+                            {activeIndex === index ? <FaChevronUp className={styles.icon}/> : <FaChevronDown className={styles.icon}/>}
                         </div>
                         <div
                             className={`${styles.section__content} ${activeIndex === index ? styles.active : ''}`}

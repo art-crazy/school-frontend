@@ -37,6 +37,10 @@
   justify-content: space-between;
 }
 
+.icon {
+  flex-shrink: 0;
+}
+
 .section__content {
   display: grid;
   grid-template-rows: 0fr;
