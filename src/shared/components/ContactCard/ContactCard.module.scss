@@ -41,7 +41,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 400px;
+  width: 100%;
   padding: 32px 0;
   margin-top: 24px;
   background-color: #1e1e1e;
@@ -102,4 +102,10 @@
   }
 
   &:active { transform: translateY(0); }
+}
+
+@media screen and (min-width: 650px) {
+  .contact {
+    width: 400px;
+  }
 }
