@@ -68,6 +68,12 @@
   gap: 12px;
 }
 
+.ul {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 .icon {
   flex-shrink: 0;
 }
