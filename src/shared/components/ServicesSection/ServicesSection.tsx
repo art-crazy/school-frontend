@@ -20,7 +20,7 @@ const ServicesSection = () => {
             icon: null,
             price: {
                 upfront: '15 000₽',
-                offer: '60% от первых двух зарплат',
+                offer: '50% от первых трех зарплат',
                 offerTooltip: 'Оплачивается после фактического получения заработной платы.'
             },
             points: [
