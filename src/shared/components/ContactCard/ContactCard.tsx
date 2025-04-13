@@ -2,7 +2,7 @@ import styles from './ContactCard.module.scss'; // Импорт стилей
 
 const ContactCard = () => {
     return (
-        <div className={`${styles.container} ${styles.gap}`}>
+        <div className={`${styles.container} ${styles.gap}`} id='contacts'>
             <div className={styles.h2__container}>
                 <div className={styles.border}></div>
                 <a

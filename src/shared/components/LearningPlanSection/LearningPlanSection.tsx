@@ -44,8 +44,8 @@ const LearningPlanSection = () => {
     ];
 
     return (
-        <div className={`${styles.container} ${styles.gap}`}>
-            <SectionHeader title={'ПЛАН ОБУЧЕНИЯ'} id={'plan'}/>
+        <div className={`${styles.container} ${styles.gap}`} id="plan">
+            <SectionHeader title={'ПЛАН ОБУЧЕНИЯ'}/>
 
             <div className={styles.accordion}>
                 {sections.map((section, index) => (

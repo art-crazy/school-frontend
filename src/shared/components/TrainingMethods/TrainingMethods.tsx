@@ -29,9 +29,9 @@ const TrainingMethods = () => {
         },
     ];
     return (
-        <div className={`${styles.container} ${styles.gap}`}>
+        <div className={`${styles.container} ${styles.gap}`} id={'methods'}>
 
-            <SectionHeader title={'МЕТОДЫ ОБУЧЕНИЯ'} id={'methods'}/>
+            <SectionHeader title={'МЕТОДЫ ОБУЧЕНИЯ'}/>
 
             <ul className={styles.list}>
                 {trainingMethods.map((obj, index) => (

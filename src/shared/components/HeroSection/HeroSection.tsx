@@ -3,7 +3,7 @@ import {FaBook, FaCode, FaMapMarkedAlt, FaPuzzlePiece, FaServer, FaTasks} from "
 
 const HeroSection = () => {
     return (
-        <div className={styles.main}>
+        <div className={styles.main} id='about'>
             <div className={styles.heroWrapper}>
                 <div className={styles.heroImage}></div>
             </div>

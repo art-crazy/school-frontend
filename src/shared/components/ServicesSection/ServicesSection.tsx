@@ -84,8 +84,8 @@ const ServicesSection = () => {
     ];
 
     return (
-        <div className={styles.container}>
-            <SectionHeader title={'Услуги'} id={'services'}/>
+        <div className={styles.container} id={'services'}>
+            <SectionHeader title={'Услуги'}/>
 
             <div className={styles.content}>
                 {/* Блок Плюсов */}

@@ -26,7 +26,8 @@ export default function Navigation() {
         { content: 'О МЕНТОРЕ', to: 'about' },
         { content: 'ПЛАН ОБУЧЕНИЯ', to: 'plan' },
         { content: 'МЕТОДЫ ОБУЧЕНИЯ', to: 'methods' },
-        { content: 'УСЛУГИ', to: 'services' }
+        { content: 'УСЛУГИ', to: 'services' },
+        { content: 'КОНТАКТЫ', to: 'contacts' }
     ];
 
     const handleNavClick = (to: string) => {
