@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { FaChevronUp } from 'react-icons/fa';
+import {useEffect, useState} from 'react';
+import {FaChevronUp} from 'react-icons/fa';
 import styles from './ScrollToTop.module.scss';
 
 const ScrollToTop = () => {
@@ -24,6 +24,7 @@ const ScrollToTop = () => {
         window.addEventListener('scroll', toggleVisibility);
         return () => {
             window.removeEventListener('scroll', toggleVisibility);
+            console.log('ТЕСТ')
         };
     }, []);
 
