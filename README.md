@@ -118,4 +118,5 @@ MIT
 
 ## 👥 Команда
 
-- [Art Crazy](https://github.com/art-crazy) - Разработчик
+- [Art Crazy](https://github.com/art-crazy) - Maintainer
+- [MalenkoZloy](https://github.com/MalenkoZloy) - Developer
