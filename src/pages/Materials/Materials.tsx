@@ -15,7 +15,7 @@ export function Materials() {
 							onChange={(e) => setUserAnswer(e.target.value)}
 						/>
 						<button
-							onClick={() => (task.answer.toLowerCase() === userAnswer.toLowerCase() ? console.log('ответ верный') : console.log('Ответ не верный'))}
+							onClick={() => (task.answer.toLowerCase() === userAnswer.toLowerCase() ? console.log('Ответ верный') : console.log('Ответ не верный'))}
 						>
 							Проверить
 						</button>
