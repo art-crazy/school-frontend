@@ -1,0 +1,31 @@
+.codeSection {
+  padding: 30px 0;
+  border-top: 1px solid #eee;
+  text-align: left
+}
+
+.codeContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.codeHeader {
+  color: #abb2bf;
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 22px;
+}
+
+.codeBlock {
+  background: #282c34;
+  padding: 20px;
+  border-radius: 8px;
+  overflow-x: auto;
+  color: #abb2bf;
+  font-family: 'Fira Code', 'Courier New', monospace;
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0;
+  text-align: left;
+}
