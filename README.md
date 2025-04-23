@@ -112,6 +112,13 @@ https://featureitschool-4dark_mode.mentor-hub.ru/
 https://mentor-hub.ru/
 ```
 
+## 📚 API Документация
+
+Документация API доступна через Swagger UI по адресу:
+```
+https://mentor-hub.ru/api/docs
+```
+
 ## 📝 Лицензия
 
 MIT
