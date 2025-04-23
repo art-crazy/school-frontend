@@ -1,12 +1,17 @@
-import { StrictMode, useState } from 'react';
-import { createRoot } from 'react-dom/client';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import {StrictMode, useState} from 'react';
+import {createRoot} from 'react-dom/client';
+import {
+  BrowserRouter as Router,
+  Navigate,
+  Route,
+  Routes
+} from 'react-router-dom';
 import Layout from "./shared/components/Layout";
 import Home from "@/pages/Home";
 import Policy from "@/pages/policy";
 import OfferAgreementPage from "@/pages/offerAgreementPage";
-import { YandexMetrika } from "@/shared/components/Yandex/YandexMetrika.tsx";
-import { AuthProvider, useAuth } from '@/shared/context/AuthContext';
+import {YandexMetrika} from "@/shared/components/Yandex/YandexMetrika.tsx";
+import {AuthProvider, useAuth} from '@/shared/context/AuthContext';
 import AuthModal from '@/widgets/AuthModal/AuthModal';
 import VerifyEmail from './pages/VerifyEmail';
 import EmailVerification from './pages/EmailVerification';
