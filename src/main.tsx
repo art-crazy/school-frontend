@@ -1,4 +1,4 @@
-import React, { StrictMode, useState } from 'react';
+import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from "./shared/components/Layout";
@@ -10,8 +10,8 @@ import { AuthProvider, useAuth } from '@/shared/context/AuthContext';
 import AuthModal from '@/widgets/AuthModal/AuthModal';
 import VerifyEmail from './pages/VerifyEmail';
 import EmailVerification from './pages/EmailVerification';
-import UseMemo from "@/pages/useMemo/UseMemo.tsx";
-import UseCallback from "@/pages/Memo/UseCallback.tsx";
+import UseMemoPage from "@/pages/UseMemo";
+import UseCallbackPage from "@/pages/UseCallback";
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
@@ -38,8 +38,8 @@ const App = () => {
           <YandexMetrika/>
           <Layout onAuthModeChange={handleAuthModeChange}>
             <Routes>
-              <Route path="/useMemo" element={<UseMemo />} />
-              <Route path="/useCallback" element={<UseCallback />} />
+              <Route path="/useMemo" element={<UseMemoPage />} />
+              <Route path="/useCallback" element={<UseCallbackPage />} />
               <Route path="/login" element={<Navigate to="/" />} />
               <Route path="/register" element={<Navigate to="/" />} />
               <Route path="/oferta" element={<OfferAgreementPage />} />
@@ -65,7 +65,5 @@ const App = () => {
 };
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
     <App />
-  </StrictMode>
 );

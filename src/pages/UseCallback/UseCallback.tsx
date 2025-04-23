@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import styles from './UseCallback.module.scss';
 import ExampleCode from "@/shared/components/ExampleCode/ExampleCode.tsx";
-import {USECALLBACK_EXAMPLE} from "@/pages/Memo/UseCallback.example.ts";
+import {USECALLBACK_EXAMPLE} from "@/pages/UseCallback/UseCallback.example.ts";
 
 interface ButtonProps {
     onClick: () => void;
@@ -40,11 +40,12 @@ const WithUseCallback: React.FC<ButtonProps> =
 ;
 
 // Основной компонент UseCallback
-const UseCallback: React.FC = () => {
+
+
+export default function UseCallbackPage() {
     console.log('')
     console.log('Render родителя');
     const [count, setCount] = useState<number>(0); // Тип состояния count
-    const [isUsingCallback, setIsUsingCallback] = useState<boolean>(true); // Тип состояния isUsingCallback
     const [clicksWithCallback, setClicksWithCallback] = useState(0); // Для отслеживания кликов с useCallback
     const [clicksWithoutCallback, setClicksWithoutCallback] = useState(0); // Для отслеживания кликов без useCallback
 
@@ -68,14 +69,6 @@ const UseCallback: React.FC = () => {
     return (
         <div className={styles.container}>
             <h1>Счетчик: {count}</h1>
-            <div className={styles.buttons}>
-                <button
-                    className={styles.toggleButton}
-                    onClick={() => setIsUsingCallback(!isUsingCallback)}
-                >
-                    Переключить на {isUsingCallback ? 'без useCallback' : 'с useCallback'}
-                </button>
-            </div>
 
             <WithUseCallback onClick={handleClick} />
             <WithoutUseCallback onClick={handleClickWithoutCallback} />
@@ -96,6 +89,4 @@ const UseCallback: React.FC = () => {
 
         </div>
     );
-};
-
-export default UseCallback;
+}

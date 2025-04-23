@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import styles from './UseMemo.module.scss';
 import ExampleCode from "@/shared/components/ExampleCode/ExampleCode.tsx";
-import {USEMEMO_EXAMPLE} from "@/pages/useMemo/UseMemo.example.ts";
+import {USEMEMO_EXAMPLE} from "@/pages/UseMemo/UseMemo.example.ts";
 
 const products = [
     { id: 1, name: 'MacBook Pro' },
@@ -11,7 +11,7 @@ const products = [
     { id: 5, name: 'AirPods Pro' },
 ];
 
-const UseMemo: React.FC = () => {
+export default function UseMemoPage () {
     console.log('')
     console.log('Рендер компонента')
     const [queryMemo, setQueryMemo] = useState('');
@@ -103,5 +103,3 @@ const UseMemo: React.FC = () => {
         </div>
     );
 };
-
-export default UseMemo;
