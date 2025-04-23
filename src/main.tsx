@@ -1,4 +1,4 @@
-import { StrictMode, useState } from "react";
+import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   BrowserRouter as Router,
@@ -41,6 +41,10 @@ const App = () => {
     setAuthMode(mode);
     setIsAuthModalOpen(true);
   };
+
+  useEffect(() => {
+    Sentry.captureException(new Error("Это тестовая ошибка Sentry"));
+  }, []);
 
   return (
     <AuthProvider>
