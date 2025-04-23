@@ -2,7 +2,20 @@ import {dataTasks} from '@/data/tasks.ts';
 import {useState} from "react";
 
 export function Materials() {
-	const [userAnswer, setUserAnswer] = useState('');
+	const [userAnswers, setUserAnswers] = useState<{ [key: number]: string }>({});
+	const [results, setResults] = useState<{ [key: number]: boolean | null }>({});
+	
+	// Обработчик изменения текстового поля
+	const handleInputChange = (id: number, value: string) => {
+		setUserAnswers((prev) => ({ ...prev, [id]: value }));
+	};
+	
+	// Обработчик проверки ответа
+	const handleCheckAnswer = (id: number, correctAnswer: string) => {
+		const userAnswer = userAnswers[id]?.toLowerCase() || '';
+		const isCorrect = userAnswer === correctAnswer.toLowerCase();
+		setResults((prev) => ({ ...prev, [id]: isCorrect }));
+	};
 	
 	return (
 		<>
@@ -12,13 +25,14 @@ export function Materials() {
 						<input
 							type="text"
 							placeholder="Введите ответ..."
-							onChange={(e) => setUserAnswer(e.target.value)}
+							onChange={(e) => handleInputChange(task.id, e.target.value)}
 						/>
-						<button
-							onClick={() => (task.answer.toLowerCase() === userAnswer.toLowerCase() ? console.log('Ответ верный') : console.log('Ответ не верный'))}
-						>
+						<button onClick={() => handleCheckAnswer(task.id, task.answer)}>
 							Проверить
 						</button>
+						{results[task.id] !== null && (
+							<p>{results[task.id] ? '✅Правильно!' : '❌Попробуйте ещё раз'}</p>
+						)}
 					</div>
 				))}
 			</div>
