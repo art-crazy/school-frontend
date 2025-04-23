@@ -5,12 +5,10 @@ export function Materials() {
 	const [userAnswers, setUserAnswers] = useState<{ [key: number]: string }>({});
 	const [results, setResults] = useState<{ [key: number]: boolean | null }>({});
 	
-	// Обработчик изменения текстового поля
 	const handleInputChange = (id: number, value: string) => {
 		setUserAnswers((prev) => ({ ...prev, [id]: value }));
 	};
 	
-	// Обработчик проверки ответа
 	const handleCheckAnswer = (id: number, correctAnswer: string) => {
 		const userAnswer = userAnswers[id]?.toLowerCase() || '';
 		const isCorrect = userAnswer === correctAnswer.toLowerCase();
