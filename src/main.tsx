@@ -11,6 +11,7 @@ import Home from "@/pages/Home";
 import Policy from "@/pages/policy";
 import OfferAgreementPage from "@/pages/offerAgreementPage";
 import { YandexMetrika } from "@/shared/components/Yandex/YandexMetrika.tsx";
+import ErrorFallback from "./shared/components/ErrorFallback";
 import { AuthProvider, useAuth } from "@/shared/context/AuthContext";
 import AuthModal from "@/widgets/AuthModal/AuthModal";
 import VerifyEmail from "./pages/VerifyEmail";
@@ -41,10 +42,6 @@ const App = () => {
     setAuthMode(mode);
     setIsAuthModalOpen(true);
   };
-
-  useEffect(() => {
-    Sentry.captureException(new Error("Это тестовая ошибка Sentry"));
-  }, []);
 
   return (
     <AuthProvider>
@@ -112,7 +109,7 @@ const App = () => {
 };
 
 createRoot(document.getElementById("root")!).render(
-  <Sentry.ErrorBoundary>
+  <Sentry.ErrorBoundary fallback={<ErrorFallback />}>
     <StrictMode>
       <App />
     </StrictMode>
