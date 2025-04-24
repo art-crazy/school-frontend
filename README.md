@@ -123,6 +123,13 @@ https://mentor-hub.ru/
 https://mentor-hub.sentry.io/
 ```
 
+## 📚 API Документация
+
+Документация API доступна через Swagger UI по адресу:
+```
+https://mentor-hub.ru/api/docs
+```
+
 ## 📝 Лицензия
 
 MIT
