@@ -9,6 +9,41 @@
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
 }
 
+.instructions {
+  background-color: #2b2b2b;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+  border: 1px solid #444;
+}
+
+.instructionsTitle {
+  font-size: 22px;
+  margin-bottom: 15px;
+  color: #ffffff;
+}
+
+.instructionsContent {
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.instructionsContent h3 {
+  margin: 15px 0 10px 0;
+  font-size: 17px;
+  color: #f0f0f0;
+}
+
+.instructionsContent ol,
+.instructionsContent ul {
+  padding-left: 20px;
+  margin: 10px 0;
+}
+
+.instructionsContent li {
+  margin-bottom: 8px;
+}
+
 .title {
   font-size: 28px;
   margin-bottom: 24px;
@@ -79,5 +114,5 @@
 .description {
   font-size: 14px;
   color: #cccccc;
+  line-height: 1.6;
 }
-

@@ -25,58 +25,53 @@ const UseMemo: React.FC = () => {
     });
 
     return (
-        <div className={styles.container}>
-            <h2 className={styles.title}>Сравнение useMemo vs Без useMemo</h2>
-            <div className={styles.grid}>
+        <div>
+            <h2>Сравнение useMemo vs Без useMemo</h2>
+            <div>
                 {/* ✅ С useMemo */}
-                <div className={styles.column}>
-                    <h3 className={styles.h3}>С useMemo</h3>
+                <div>
+                    <h3>С useMemo</h3>
                     <input
-                        type="text"
-                        className={styles.input}
                         placeholder="Поиск..."
                         value={queryMemo}
                         onChange={(e) => setQueryMemo(e.target.value)}
                     />
                     <button
-                        className={styles.button}
                         onClick={() => setRenderCountMemo((c) => c + 1)}
                     >
                         Принудительный ререндер
                     </button>
-                    <ul className={styles.list}>
+                    <ul>
                         {filteredWithMemo.map((product) => (
-                            <li key={product.id} className={styles.item}>{product.name}</li>
+                            <li key={product.id}>{product.name}</li>
                         ))}
                     </ul>
-                    <p className={styles.description}>
+                    <p>
                         🔁 Рендеров: {renderCountMemo} <br/>
                         🔒 <code>useMemo</code> кэширует результат фильтрации.
                     </p>
                 </div>
 
                 {/* ❌ Без useMemo */}
-                <div className={styles.column}>
-                    <h3 className={styles.h3}>Без useMemo</h3>
+                <div>
+                    <h3>Без useMemo</h3>
                     <input
                         type="text"
-                        className={styles.input}
                         placeholder="Поиск..."
                         value={queryNoMemo}
                         onChange={(e) => setQueryNoMemo(e.target.value)}
                     />
                     <button
-                        className={styles.button}
                         onClick={() => setRenderCountNoMemo((c) => c + 1)}
                     >
                         Принудительный ререндер
                     </button>
-                    <ul className={styles.list}>
+                    <ul>
                         {filteredWithoutMemo.map((product) => (
-                            <li key={product.id} className={styles.item}>{product.name}</li>
+                            <li key={product.id}>{product.name}</li>
                         ))}
                     </ul>
-                    <p className={styles.description}>
+                    <p>
                         🔁 Рендеров: {renderCountNoMemo} <br/>
                         ❗ Фильтрация происходит каждый раз.
                     </p>

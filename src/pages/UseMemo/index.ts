@@ -1,3 +1,3 @@
-import UseMemoPage from './UseMemo';
+import UseMemoPage from './UseMemoPage.tsx';
 
 export default UseMemoPage;
