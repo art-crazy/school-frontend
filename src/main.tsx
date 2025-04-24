@@ -19,9 +19,7 @@ import "./shared/instrument";
 
 const SentryRoutes = Sentry.withSentryReactRouterV7Routing(Routes);
 
-const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -33,9 +31,9 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({
 
 const App = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authMode, setAuthMode] = useState<"login" | "register">("login");
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
 
-  const handleAuthModeChange = (mode: "login" | "register") => {
+  const handleAuthModeChange = (mode: 'login' | 'register') => {
     setAuthMode(mode);
     setIsAuthModalOpen(true);
   };
