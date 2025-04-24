@@ -1,4 +1,4 @@
-import {dataTasks} from '@/data/tasks.ts';
+import {dataTasks, Task} from '@/data/tasks.ts';
 import {useState} from "react";
 
 export function Materials() {
@@ -18,7 +18,7 @@ export function Materials() {
 	return (
 		<>
 			<div>
-				{dataTasks.map((task: dataTasks) => (
+				{dataTasks.map((task: Task) => (
 					<div key={task.id}>{task.question}
 						<input
 							type="text"
