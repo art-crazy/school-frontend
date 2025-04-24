@@ -30,23 +30,7 @@ main {
 }
 
 a {
-    color: #4dabf7 !important;
-    text-decoration: none;
-    transition: color 0.2s ease;
-    font-weight: 500;
-
-    &:hover {
-        color: #339af0 !important;
-        text-decoration: underline;
-    }
-
-    &:active {
-        color: #1c7ed6;
-    }
-
-    &:visited {
-        color: #9775fa;
-    }
+    color: #4c7eff;
 }
 
 ::placeholder {

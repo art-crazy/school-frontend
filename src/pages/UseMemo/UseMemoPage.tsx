@@ -66,7 +66,10 @@ export default function UseMemoPage() {
 
                     <h3>Официальная документация:
                     </h3>
-                    <a className={styles.class} href={'https://ru.react.dev/reference/react/useMemo'}>
+                    <a target="_blank"
+                       rel="noopener noreferrer"
+                       className={styles.a}
+                       href={'https://ru.react.dev/reference/react/useMemo'}>
                         https://ru.react.dev/reference/react/useMemo
                     </a>
                 </div>
