@@ -12,6 +12,7 @@ import VerifyEmail from './pages/VerifyEmail';
 import EmailVerification from './pages/EmailVerification';
 import UseMemoPage from "@/pages/UseMemo";
 import UseCallbackPage from "@/pages/UseCallback";
+import FrontendPage from "@/pages/Frontend/FrontendPage";
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
@@ -38,6 +39,8 @@ const App = () => {
           <YandexMetrika/>
           <Layout onAuthModeChange={handleAuthModeChange}>
             <Routes>
+              <Route path="/frontend" element={<FrontendPage />} />
+              <Route path="/frontend/:materialId" element={<FrontendPage />} />
               <Route path="/useMemo" element={<UseMemoPage />} />
               <Route path="/useCallback" element={<UseCallbackPage />} />
               <Route path="/login" element={<Navigate to="/" />} />
