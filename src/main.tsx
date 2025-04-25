@@ -12,6 +12,11 @@ import VerifyEmail from './pages/VerifyEmail';
 import EmailVerification from './pages/EmailVerification';
 import UseMemoPage from "@/pages/UseMemo";
 import UseCallbackPage from "@/pages/UseCallback";
+import ErrorFallback from "./shared/components/ErrorFallback";
+import * as Sentry from "@sentry/react";
+import "./shared/instrument";
+
+const SentryRoutes = Sentry.withSentryReactRouterV7Routing(Routes);
 import FrontendPage from "@/pages/Frontend/FrontendPage";
 import { PromiseTasksPage } from "@/pages/PromiseTasks";
 
@@ -39,7 +44,7 @@ const App = () => {
         <Router>
           <YandexMetrika/>
           <Layout onAuthModeChange={handleAuthModeChange}>
-            <Routes>
+            <SentryRoutes>
               <Route path="/promise-tasks" element={<PromiseTasksPage />} />
               <Route path="/frontend" element={<FrontendPage />} />
               <Route path="/frontend/:materialId" element={<FrontendPage />} />
@@ -57,7 +62,7 @@ const App = () => {
               <Route path="/faq" element={<PrivateRoute><Home /></PrivateRoute>} />
               <Route path="/verify-email" element={<VerifyEmail />} />
               <Route path="/email-verification" element={<EmailVerification />} />
-            </Routes>
+            </SentryRoutes>
             <AuthModal
                 isOpen={isAuthModalOpen}
                 onClose={() => setIsAuthModalOpen(false)}
@@ -70,5 +75,7 @@ const App = () => {
 };
 
 createRoot(document.getElementById('root')!).render(
-    <App />
+  <Sentry.ErrorBoundary fallback={<ErrorFallback />}>
+      <App />
+  </Sentry.ErrorBoundary>
 );
