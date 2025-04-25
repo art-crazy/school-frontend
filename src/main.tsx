@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
@@ -12,6 +13,11 @@ import VerifyEmail from './pages/VerifyEmail';
 import EmailVerification from './pages/EmailVerification';
 import UseMemoPage from "@/pages/UseMemo";
 import UseCallbackPage from "@/pages/UseCallback";
+import ErrorFallback from "./shared/components/ErrorFallback";
+import * as Sentry from "@sentry/react";
+import "./shared/instrument";
+
+const SentryRoutes = Sentry.withSentryReactRouterV7Routing(Routes);
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
@@ -37,7 +43,7 @@ const App = () => {
         <Router>
           <YandexMetrika/>
           <Layout onAuthModeChange={handleAuthModeChange}>
-            <Routes>
+            <SentryRoutes>
               <Route path="/useMemo" element={<UseMemoPage />} />
               <Route path="/useCallback" element={<UseCallbackPage />} />
               <Route path="/login" element={<Navigate to="/" />} />
@@ -52,7 +58,7 @@ const App = () => {
               <Route path="/faq" element={<PrivateRoute><Home /></PrivateRoute>} />
               <Route path="/verify-email" element={<VerifyEmail />} />
               <Route path="/email-verification" element={<EmailVerification />} />
-            </Routes>
+            </SentryRoutes>
             <AuthModal
                 isOpen={isAuthModalOpen}
                 onClose={() => setIsAuthModalOpen(false)}
@@ -65,5 +71,7 @@ const App = () => {
 };
 
 createRoot(document.getElementById('root')!).render(
-    <App />
+  <Sentry.ErrorBoundary fallback={<ErrorFallback />}>
+      <App />
+  </Sentry.ErrorBoundary>
 );
