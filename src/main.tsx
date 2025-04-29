@@ -18,7 +18,9 @@ import "./shared/instrument";
 
 const SentryRoutes = Sentry.withSentryReactRouterV7Routing(Routes);
 import FrontendPage from "@/pages/Frontend/FrontendPage";
-import { PromiseTasksPage } from "@/pages/PromiseTasks";
+import JavaScriptPage from "@/pages/Frontend/JavaScriptPage";
+import TopicPage from "@/pages/Frontend/TopicPage";
+import PromiseTasksPage from "@/pages/Frontend/PromiseTasksPage";
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
@@ -45,9 +47,10 @@ const App = () => {
           <YandexMetrika/>
           <Layout onAuthModeChange={handleAuthModeChange}>
             <SentryRoutes>
-              <Route path="/promise-tasks" element={<PromiseTasksPage />} />
               <Route path="/frontend" element={<FrontendPage />} />
-              <Route path="/frontend/:materialId" element={<FrontendPage />} />
+              <Route path="/frontend/javascript" element={<JavaScriptPage />} />
+              <Route path="/frontend/javascript/:topicId" element={<TopicPage />} />
+              <Route path="/frontend/promise-tasks" element={<PromiseTasksPage />} />
               <Route path="/useMemo" element={<UseMemoPage />} />
               <Route path="/useCallback" element={<UseCallbackPage />} />
               <Route path="/login" element={<Navigate to="/" />} />
