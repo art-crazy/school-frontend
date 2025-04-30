@@ -51,6 +51,8 @@ const App = () => {
               <Route path="/frontend" element={<FrontendPage />} />
               <Route path="/frontend/javascript" element={<JavaScriptPage />} />
               <Route path="/frontend/javascript/:topicId" element={<TopicPage />} />
+              <Route path="/frontend/promise-tasks" element={<Navigate to="/frontend/promise-tasks/1" replace />} />
+              <Route path="/frontend/promise-tasks/:page" element={<PromiseTasksPage />} />
               <Route path="/frontend/promise-tasks" element={<PromiseTasksPage />} />
               <Route path="/useMemo" element={<UseMemoPage />} />
               <Route path="/useCallback" element={<UseCallbackPage />} />

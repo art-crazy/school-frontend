@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import styles from './PromiseTasksPage.module.scss';
 import { promiseTasks } from "@/pages/Frontend/materials";
 import { Breadcrumbs } from "@/shared/ui/Breadcrumbs/Breadcrumbs.tsx";
-import { CheckCircle, ChevronRight, Code, Lightbulb, AlertCircle } from 'lucide-react';
+import { CheckCircle, ChevronRight, Code, Lightbulb, AlertCircle, ChevronLeft, ChevronRight as ChevronRightIcon } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
 
 interface Task {
     id: string;
@@ -23,6 +24,8 @@ interface TaskContent {
 }
 
 const PromiseTasksPage: React.FC = () => {
+    const { page = '1' } = useParams<{ page?: string }>();
+    const navigate = useNavigate();
     const [showHints, setShowHints] = useState<Record<string, boolean>>({});
     const [currentHintIndex, setCurrentHintIndex] = useState<Record<string, number>>({});
     const [userAnswers, setUserAnswers] = useState<Record<string, string[]>>({});
@@ -31,6 +34,15 @@ const PromiseTasksPage: React.FC = () => {
     const material = promiseTasks[0];
     const content = material.content as TaskContent;
     const tasks = content.tasks;
+
+    const currentTaskIndex = parseInt(page, 10) - 1;
+    const currentTask = tasks[currentTaskIndex];
+
+    useEffect(() => {
+        if (currentTaskIndex < 0 || currentTaskIndex >= tasks.length) {
+            navigate('/frontend/promise-tasks/1');
+        }
+    }, [currentTaskIndex, tasks.length, navigate]);
 
     const handleCheckAnswer = (taskId: string) => {
         const task = tasks.find(t => t.id === taskId);
@@ -54,6 +66,17 @@ const PromiseTasksPage: React.FC = () => {
         }
     };
 
+    const handleTaskNavigation = (direction: 'prev' | 'next') => {
+        const newIndex = direction === 'prev' ? currentTaskIndex - 1 : currentTaskIndex + 1;
+        if (newIndex >= 0 && newIndex < tasks.length) {
+            navigate(`/frontend/promise-tasks/${newIndex + 1}`);
+        }
+    };
+
+    if (!currentTask) {
+        return null;
+    }
+
     return (
         <div className={styles.promiseTasksPage}>
             <div className={styles.container}>
@@ -72,92 +95,112 @@ const PromiseTasksPage: React.FC = () => {
                 </div>
 
                 <div className={styles.tasksList}>
-                    {tasks.map((task) => (
-                        <div key={task.id} className={styles.taskItem}>
-                            <div className={styles.taskHeader}>
-                                <div className={styles.taskTitle}>
-                                    {task.title}
-                                </div>
-                                <div className={styles.taskDifficulty}>
-                                    {task.hints ? 'Средняя' : 'Легкая'}
-                                </div>
+                    <div className={styles.taskItem}>
+                        <div className={styles.taskHeader}>
+                            <div className={styles.taskTitle}>
+                                {currentTask.title}
+                            </div>
+                            <div className={styles.taskDifficulty}>
+                                {currentTask.hints ? 'Средняя' : 'Легкая'}
+                            </div>
+                        </div>
+
+                        <div className={styles.taskContent}>
+                            <div className={styles.codeBlock}>
+                                <Code size={20} className={styles.codeIcon} />
+                                <pre>{currentTask.code}</pre>
                             </div>
 
-                            <div className={styles.taskContent}>
-                                <div className={styles.codeBlock}>
-                                    <Code size={20} className={styles.codeIcon} />
-                                    <pre>{task.code}</pre>
-                                </div>
-
-                                <div className={styles.answerSection}>
-                                    <h3>Введите ожидаемый вывод (каждое значение с новой строки):</h3>
-                                    <textarea
-                                        className={styles.answerInput}
-                                        value={userAnswers[task.id]?.join('\n') || ''}
-                                        onChange={(e) => setUserAnswers(prev => ({
-                                            ...prev,
-                                            [task.id]: e.target.value.split('\n').filter(Boolean)
-                                        }))}
-                                        placeholder="Введите ожидаемый вывод..."
-                                    />
-                                    <button
-                                        onClick={() => handleCheckAnswer(task.id)}
-                                        className={styles.checkButton}
-                                    >
-                                        Проверить ответ
-                                    </button>
-                                    {isCorrect[task.id] !== undefined && (
-                                        <div className={`${styles.result} ${isCorrect[task.id] ? styles.correct : styles.incorrect}`}>
-                                            {isCorrect[task.id] ? (
-                                                <>
-                                                    <CheckCircle size={20} />
-                                                    <span>Правильно!</span>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <AlertCircle size={20} />
-                                                    <span>Неправильно. Попробуйте еще раз.</span>
-                                                </>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div className={styles.explanation}>
-                                    <h3>Объяснение:</h3>
-                                    <ReactMarkdown>{task.explanation}</ReactMarkdown>
-                                </div>
-
-                                {task.hints && (
-                                    <div className={styles.hintsSection}>
-                                        <button
-                                            onClick={() => handleShowHints(task.id)}
-                                            className={styles.hintButton}
-                                            disabled={showHints[task.id]}
-                                        >
-                                            <Lightbulb size={20} />
-                                            <span>Показать подсказки</span>
-                                        </button>
-                                        {showHints[task.id] && (
-                                            <div className={styles.hints}>
-                                                <h3>Подсказка {currentHintIndex[task.id] + 1}:</h3>
-                                                <p>{task.hints[currentHintIndex[task.id]].text}</p>
-                                                {currentHintIndex[task.id] < task.hints.length - 1 && (
-                                                    <button
-                                                        onClick={() => handleNextHint(task.id)}
-                                                        className={styles.nextHintButton}
-                                                    >
-                                                        <ChevronRight size={20} />
-                                                        <span>Следующая подсказка</span>
-                                                    </button>
-                                                )}
-                                            </div>
+                            <div className={styles.answerSection}>
+                                <h3>Введите ожидаемый вывод (каждое значение с новой строки):</h3>
+                                <textarea
+                                    className={styles.answerInput}
+                                    value={userAnswers[currentTask.id]?.join('\n') || ''}
+                                    onChange={(e) => setUserAnswers(prev => ({
+                                        ...prev,
+                                        [currentTask.id]: e.target.value.split('\n').filter(Boolean)
+                                    }))}
+                                    placeholder="Введите ожидаемый вывод..."
+                                />
+                                <button
+                                    onClick={() => handleCheckAnswer(currentTask.id)}
+                                    className={styles.checkButton}
+                                >
+                                    Проверить ответ
+                                </button>
+                                {isCorrect[currentTask.id] !== undefined && (
+                                    <div className={`${styles.result} ${isCorrect[currentTask.id] ? styles.correct : styles.incorrect}`}>
+                                        {isCorrect[currentTask.id] ? (
+                                            <>
+                                                <CheckCircle size={20} />
+                                                <span>Правильно!</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <AlertCircle size={20} />
+                                                <span>Неправильно. Попробуйте еще раз.</span>
+                                            </>
                                         )}
                                     </div>
                                 )}
                             </div>
+
+                            <div className={styles.explanation}>
+                                <h3>Объяснение:</h3>
+                                <ReactMarkdown>{currentTask.explanation}</ReactMarkdown>
+                            </div>
+
+                            {currentTask.hints && (
+                                <div className={styles.hintsSection}>
+                                    <button
+                                        onClick={() => handleShowHints(currentTask.id)}
+                                        className={styles.hintButton}
+                                        disabled={showHints[currentTask.id]}
+                                    >
+                                        <Lightbulb size={20} />
+                                        <span>Показать подсказки</span>
+                                    </button>
+                                    {showHints[currentTask.id] && (
+                                        <div className={styles.hints}>
+                                            <h3>Подсказка {currentHintIndex[currentTask.id] + 1}:</h3>
+                                            <p>{currentTask.hints[currentHintIndex[currentTask.id]].text}</p>
+                                            {currentHintIndex[currentTask.id] < currentTask.hints.length - 1 && (
+                                                <button
+                                                    onClick={() => handleNextHint(currentTask.id)}
+                                                    className={styles.nextHintButton}
+                                                >
+                                                    <ChevronRight size={20} />
+                                                    <span>Следующая подсказка</span>
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
-                    ))}
+                    </div>
+                </div>
+
+                <div className={styles.pagination}>
+                    <button
+                        onClick={() => handleTaskNavigation('prev')}
+                        disabled={currentTaskIndex === 0}
+                        className={styles.paginationButton}
+                    >
+                        <ChevronLeft size={20} />
+                        <span>Предыдущая задача</span>
+                    </button>
+                    <div className={styles.pageInfo}>
+                        Задача {currentTaskIndex + 1} из {tasks.length}
+                    </div>
+                    <button
+                        onClick={() => handleTaskNavigation('next')}
+                        disabled={currentTaskIndex === tasks.length - 1}
+                        className={styles.paginationButton}
+                    >
+                        <span>Следующая задача</span>
+                        <ChevronRightIcon size={20} />
+                    </button>
                 </div>
             </div>
         </div>
