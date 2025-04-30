@@ -46,8 +46,14 @@
 
 .materialsList {
     @apply flex flex-col gap-4;
-    margin-left: 15%;
-    width: 85%;
+    width: 100%;
+}
+
+@media screen and (min-width: 650px) {
+    .materialsList {
+        margin-left: 15%;
+        width: 85%;
+    }
 }
 
 .materialItem {
