@@ -3,7 +3,15 @@ import ReactMarkdown from 'react-markdown';
 import styles from './PromiseTasksPage.module.scss';
 import { promiseTasks } from "@/pages/Frontend/materials";
 import { Breadcrumbs } from "@/shared/ui/Breadcrumbs/Breadcrumbs.tsx";
-import { CheckCircle, ChevronRight, Code, Lightbulb, AlertCircle, ChevronLeft, ChevronRight as ChevronRightIcon } from 'lucide-react';
+import {
+    CheckCircle,
+    ChevronRight,
+    Code,
+    Lightbulb,
+    AlertCircle,
+    ChevronLeft,
+    ChevronRight as ChevronRightIcon
+} from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 interface Task {
@@ -24,27 +32,37 @@ interface TaskContent {
 }
 
 const PromiseTasksPage: React.FC = () => {
-    const { page = '1' } = useParams<{ page?: string }>();
+    const { taskId } = useParams<{ taskId?: string }>();
     const navigate = useNavigate();
     const [showHints, setShowHints] = useState<Record<string, boolean>>({});
     const [currentHintIndex, setCurrentHintIndex] = useState<Record<string, number>>({});
     const [userAnswers, setUserAnswers] = useState<Record<string, string[]>>({});
     const [isCorrect, setIsCorrect] = useState<Record<string, boolean | null>>({});
 
-    const material = promiseTasks[0];
-    const content = material.content as TaskContent;
-    const tasks = content.tasks;
-
-    const currentTaskIndex = parseInt(page, 10) - 1;
-    const currentTask = tasks[currentTaskIndex];
+    // Find the material that contains the current task
+    const material = promiseTasks.find(m => m.type === 'promise-task');
+    const content = material?.content as TaskContent | undefined;
+    const tasks = content?.tasks || [];
+    const currentTask = tasks.find(t => t.id === taskId);
+    const currentTaskIndex = currentTask ? tasks.indexOf(currentTask) : -1;
 
     useEffect(() => {
-        if (currentTaskIndex < 0 || currentTaskIndex >= tasks.length) {
-            navigate('/frontend/promise-tasks/1');
+        if (!currentTask && tasks.length > 0) {
+            // If no task is found, redirect to the first task
+            navigate(`/frontend/promise-tasks/${tasks[0].id}`);
         }
-    }, [currentTaskIndex, tasks.length, navigate]);
+    }, [currentTask, navigate, tasks]);
+
+    if (!material) {
+        return <div>Material not found</div>;
+    }
+
+    if (!currentTask) {
+        return null;
+    }
 
     const handleCheckAnswer = (taskId: string) => {
+        console.log('taskId', taskId)
         const task = tasks.find(t => t.id === taskId);
         if (!task) return;
 
@@ -84,14 +102,12 @@ const PromiseTasksPage: React.FC = () => {
 
     const handleTaskNavigation = (direction: 'prev' | 'next') => {
         const newIndex = direction === 'prev' ? currentTaskIndex - 1 : currentTaskIndex + 1;
-        if (newIndex >= 0 && newIndex < tasks.length) {
-            navigate(`/frontend/promise-tasks/${newIndex + 1}`);
+        const nextTask = tasks[newIndex];
+
+        if (nextTask) {
+            navigate(`/frontend/promise-tasks/${nextTask.id}`);
         }
     };
-
-    if (!currentTask) {
-        return null;
-    }
 
     return (
         <div className={styles.promiseTasksPage}>
