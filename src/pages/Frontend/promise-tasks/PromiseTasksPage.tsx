@@ -116,10 +116,26 @@ const PromiseTasksPage: React.FC = () => {
                                 <textarea
                                     className={styles.answerInput}
                                     value={userAnswers[currentTask.id]?.join('\n') || ''}
-                                    onChange={(e) => setUserAnswers(prev => ({
-                                        ...prev,
-                                        [currentTask.id]: e.target.value.split('\n').filter(Boolean)
-                                    }))}
+                                    onChange={(e) => {
+                                        const lines = e.target.value.split('\n');
+                                        setUserAnswers(prev => ({
+                                            ...prev,
+                                            [currentTask.id]: lines
+                                        }));
+                                    }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && !e.shiftKey) {
+                                            e.preventDefault();
+                                            const textarea = e.target as HTMLTextAreaElement;
+                                            const cursorPosition = textarea.selectionStart;
+                                            const value = textarea.value;
+                                            const newValue = value.slice(0, cursorPosition) + '\n' + value.slice(cursorPosition);
+                                            setUserAnswers(prev => ({
+                                                ...prev,
+                                                [currentTask.id]: newValue.split('\n')
+                                            }));
+                                        }
+                                    }}
                                     placeholder="Введите ожидаемый вывод..."
                                 />
                                 <button
