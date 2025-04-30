@@ -21,7 +21,7 @@ const SentryRoutes = Sentry.withSentryReactRouterV7Routing(Routes);
 import FrontendPage from "@/pages/Frontend/FrontendPage";
 import JavaScriptPage from "@/pages/Frontend/JavaScriptPage";
 import TopicPage from "@/pages/Frontend/TopicPage";
-import PromiseTasksPage from "@/pages/Frontend/PromiseTasksPage";
+import PromiseTasksPage from "@/pages/Frontend/promise-tasks/PromiseTasksPage.tsx";
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
