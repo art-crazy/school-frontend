@@ -48,7 +48,23 @@ const PromiseTasksPage: React.FC = () => {
         const task = tasks.find(t => t.id === taskId);
         if (!task) return;
 
-        const isAnswerCorrect = JSON.stringify(userAnswers[taskId]) === JSON.stringify(task.expectedOutput);
+        const normalizeAnswer = (answer: string[]) => {
+            if (!answer || answer.length === 0) return [];
+
+            const combinedString = answer.join(' ');
+            const splitBySpaces = combinedString.split(/[\s,]+/).filter(Boolean);
+
+            if (splitBySpaces.length === 0) {
+                return answer.map(line => line.trim()).filter(line => line.length > 0);
+            }
+
+            return splitBySpaces.sort();
+        };
+
+        const userAnswer = normalizeAnswer(userAnswers[taskId] || []);
+        const expectedAnswer = normalizeAnswer(task.expectedOutput);
+
+        const isAnswerCorrect = JSON.stringify(userAnswer) === JSON.stringify(expectedAnswer);
         setIsCorrect(prev => ({ ...prev, [taskId]: isAnswerCorrect }));
     };
 
