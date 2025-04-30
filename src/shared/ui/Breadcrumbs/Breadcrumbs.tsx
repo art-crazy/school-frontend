@@ -20,7 +20,7 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ title, paths }) => {
                 <Link to="/" className={styles.homeLink}>
                     <Home size={16} />
                 </Link>
-                <ChevronRight className={styles.separator} size={16} />
+                {paths.length > 0 && <ChevronRight className={styles.separator} size={16} />}
                 {paths.map((path, index) => (
                     <React.Fragment key={path.url}>
                         <Link to={path.url} className={styles.path}>
@@ -31,6 +31,7 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ title, paths }) => {
                         )}
                     </React.Fragment>
                 ))}
+                <ChevronRight className={styles.separator} size={16} />
             </div>
             <h1 className={styles.title}>{title}</h1>
         </div>
