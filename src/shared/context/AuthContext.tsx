@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
-import { login as apiLogin, register as apiRegister, loginWithTelegram as apiLoginWithTelegram, UserData } from '../api/auth';
+import { login as apiLogin, register as apiRegister, loginWithTelegram as apiLoginWithTelegram, UserData, TelegramAuthData } from '../api/auth';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -9,7 +9,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, firstName: string) => Promise<void>;
-  loginWithTelegram: (data: never) => Promise<void>;
+  loginWithTelegram: (data: TelegramAuthData) => Promise<void>;
   logout: () => void;
 }
 
@@ -55,7 +55,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const loginWithTelegram = async (data: never) => {
+  const loginWithTelegram = async (data: TelegramAuthData) => {
     setLoading(true);
     try {
       const userData = await apiLoginWithTelegram(data);
