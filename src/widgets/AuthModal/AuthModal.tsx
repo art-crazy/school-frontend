@@ -22,6 +22,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
   const [isLogin, setIsLogin] = useState(initialMode === 'login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
   const [error, setError] = useState<string | React.ReactNode>('');
   const [loading, setLoading] = useState(false);
   const { login, register, loginWithTelegram } = useAuth();
@@ -67,38 +68,20 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
         if (!user || !user.id) {
           throw new Error('Неверные данные от Telegram');
         }
-        
+
         // Показываем индикатор загрузки
         setLoading(true);
         setError('');
-        
+
         // Вызываем функцию аутентификации
         loginWithTelegram(user)
           .then(() => {
             console.log('Telegram auth successful');
             onClose();
           })
-          .catch((err) => {
-            console.error('Ошибка при обработке данных от Telegram:', err);
-            // Если ошибка связана с SMTP, пробуем войти еще раз
-            if (err.message.includes('smtp')) {
-              console.log('Пробуем войти еще раз после ошибки SMTP');
-              setTimeout(() => {
-                loginWithTelegram(user)
-                  .then(() => {
-                    console.log('Telegram auth successful after retry');
-                    onClose();
-                  })
-                  .catch((retryErr) => {
-                    console.error('Ошибка при повторной попытке входа:', retryErr);
-                    setError('Ошибка при входе через Telegram. Пожалуйста, попробуйте еще раз.');
-                    setLoading(false);
-                  });
-              }, 1000); // Ждем 1 секунду перед повторной попыткой
-            } else {
-              setError('Ошибка при входе через Telegram. Пожалуйста, попробуйте еще раз.');
-              setLoading(false);
-            }
+          .catch((err: Error) => {
+            console.error('Error during Telegram login:', err);
+            setError(err.message);
           });
       } catch (err) {
         console.error('Ошибка при обработке данных от Telegram:', err);
@@ -122,10 +105,10 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
 
     try {
       if (isLogin) {
-        await login({ email, password });
+        await login(email, password);
         onClose();
       } else {
-        await register({ email, password });
+        await register(email, password, firstName);
         onClose();
         navigate('/email-verification', { state: { email } });
       }
@@ -168,6 +151,20 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
         <button className={styles.closeButton} onClick={onClose}>×</button>
         <h2>{isLogin ? 'Вход' : 'Регистрация'}</h2>
         <form className={styles.form} onSubmit={handleSubmit}>
+          {!isLogin && (
+            <div className={styles.formGroup}>
+              <label className={styles.label} htmlFor="firstName">Имя</label>
+              <input
+                id="firstName"
+                className={styles.input}
+                type="text"
+                placeholder="Введите ваше имя"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required={!isLogin}
+              />
+            </div>
+          )}
           <div className={styles.formGroup}>
             <label className={styles.label} htmlFor="email">Email</label>
             <input

@@ -1,35 +1,38 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { ChevronRight, Home } from 'lucide-react';
 import styles from './Breadcrumbs.module.scss';
+
+interface Path {
+    title: string;
+    url: string;
+}
 
 interface BreadcrumbsProps {
     title: string;
-    paths?: Array<{
-        title: string;
-        url: string;
-    }>;
+    paths: Path[];
 }
 
-export function Breadcrumbs({ title, paths }: BreadcrumbsProps) {
+export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ title, paths }) => {
     return (
-        <nav aria-label="Хлебные крошки">
-            <div className={styles.container}>
-                <Link className={styles.breadcrumbs} to="/">
-                    Главная
+        <div className={styles.breadcrumbs}>
+            <div className={styles.paths}>
+                <Link to="/" className={styles.homeLink}>
+                    <Home size={16} />
                 </Link>
-                <span> / </span>
-                {paths?.map((path, index) => (
-                    <React.Fragment key={index}>
-                        <Link className={styles.breadcrumbs} to={path.url}>
+                <ChevronRight className={styles.separator} size={16} />
+                {paths.map((path, index) => (
+                    <React.Fragment key={path.url}>
+                        <Link to={path.url} className={styles.path}>
                             {path.title}
                         </Link>
-                        <span> / </span>
+                        {index < paths.length - 1 && (
+                            <ChevronRight className={styles.separator} size={16} />
+                        )}
                     </React.Fragment>
                 ))}
-                <span className={styles.title} aria-current="page">
-                    {title}
-                </span>
             </div>
-        </nav>
+            <h1 className={styles.title}>{title}</h1>
+        </div>
     );
-}
+};

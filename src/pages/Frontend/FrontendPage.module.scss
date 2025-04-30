@@ -47,27 +47,30 @@
 }
 
 .topicCard {
-  @apply cursor-pointer transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] border border-gray-700/50;
+  @apply cursor-pointer transition-all duration-300 hover:shadow-2xl hover:scale-[1.02];
   position: relative;
   overflow: hidden;
   backdrop-filter: blur(8px);
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.7));
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.8));
+  border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 
   &::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(to right, transparent, rgba(56, 189, 248, 0.3), transparent);
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
   }
 
   &:hover {
-    border-color: rgba(56, 189, 248, 0.3);
+    border-color: rgba(255, 255, 255, 0.2);
     box-shadow: 0 0 30px rgba(56, 189, 248, 0.1);
-    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.8));
+    
+    &::before {
+      opacity: 1;
+    }
   }
 }
 
@@ -76,6 +79,7 @@
   position: relative;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
 
   &::after {
     content: '';
@@ -89,6 +93,7 @@
   &:hover {
     transform: scale(1.1);
     border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
   }
 
   &:hover::after {
@@ -99,6 +104,9 @@
 .cardTitle {
   @apply text-2xl font-semibold text-white mb-2;
   text-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+  background: linear-gradient(to right, #fff, rgba(255, 255, 255, 0.8));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .cardDescription {
@@ -118,14 +126,16 @@
   &:hover {
     background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(15, 23, 42, 0.3));
     border-color: rgba(56, 189, 248, 0.2);
+    transform: translateY(-2px);
   }
 }
 
 .button {
   @apply w-full transition-all duration-300 text-gray-200 hover:text-white flex items-center justify-center gap-2;
-
+  
   &:hover {
     transform: translateX(4px);
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
   }
 }
 

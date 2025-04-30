@@ -8,20 +8,41 @@
 }
 
 .breadcrumbs {
-    color: #60a5fa;
-    text-decoration: none;
-    font-size: 0.9rem;
-    transition: color 0.3s ease;
+    @apply mb-8;
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+}
 
-    &:hover {
-        color: #93c5fd;
-        text-decoration: none;
-    }
+.paths {
+    @apply flex items-center gap-2 text-[1rem] text-gray-400;
+    margin-bottom: 0;
+}
+
+.homeLink {
+    @apply flex items-center text-[1rem] text-gray-400 hover:text-blue-400 transition-colors;
+    text-decoration: none;
+}
+
+.path {
+    @apply text-[1rem] text-gray-400 hover:text-blue-400 transition-colors;
+    text-decoration: none;
+}
+
+.separator {
+    @apply text-[1rem] text-gray-400;
+    width: 1rem;
+    height: 1rem;
 }
 
 .title {
-    color: #9ca3af;
-    font-size: 0.9rem;
+    @apply text-[1rem] font-semibold text-white;
+    margin: 0;
+    line-height: 1.2;
 }
 
 span {

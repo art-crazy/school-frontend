@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef } from 'react';
+import { useMemo, useState, useRef } from 'react';
 import styles from './UseMemoPage.module.scss';
 import ExampleCode from "@/shared/components/ExampleCode/ExampleCode.tsx";
 import { USEMEMO_EXAMPLE } from "@/pages/UseMemo/UseMemoPage.example.ts";

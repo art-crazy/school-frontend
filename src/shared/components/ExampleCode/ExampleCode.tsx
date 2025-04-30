@@ -1,5 +1,4 @@
 import styles from "./ExampleCode.module.scss";
-import React from "react";
 
 export default function ExampleCode({code}: {code: string}) {
     return (
