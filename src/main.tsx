@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import "./index.css"
 import Layout from "./shared/components/Layout";
 import Home from "@/pages/Home";
 import Policy from "@/pages/policy";

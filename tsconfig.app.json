@@ -1,33 +1,26 @@
 {
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "types": ["node"], // Добавляем типы Node.js
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"] // Настройка алиаса @ (если используется)
-    },
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "target": "ES2020",
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
-
-    /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
     "isolatedModules": true,
-    "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
-
-    /* Linting */
     "strict": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true,
-    "allowSyntheticDefaultImports": true
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }
