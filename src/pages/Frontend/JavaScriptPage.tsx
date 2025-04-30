@@ -1,44 +1,31 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Breadcrumbs } from '@/shared/ui/Breadcrumbs/Breadcrumbs';
+import { motion } from 'framer-motion';
+import { CheckCircle, Circle, ChevronRight } from 'lucide-react';
 import styles from './JavaScriptPage.module.scss';
-import { Breadcrumbs } from '../../shared/ui/Breadcrumbs/Breadcrumbs';
 
 const topics = [
     {
-        id: 'basics',
+        id: 1,
         title: 'Основы JavaScript',
-        description: 'Переменные, типы данных, операторы и основы синтаксиса',
-        icon: '📚'
+        description: 'Изучите базовые концепции и синтаксис JavaScript',
+        link: '/frontend/javascript/basics',
+        completed: true
     },
     {
-        id: 'functions',
-        title: 'Функции',
-        description: 'Объявление функций, параметры, возвращаемые значения и замыкания',
-        icon: '🔧'
+        id: 2,
+        title: 'Работа с DOM',
+        description: 'Научитесь манипулировать элементами веб-страницы',
+        link: '/frontend/javascript/dom',
+        completed: false
     },
     {
-        id: 'objects',
-        title: 'Объекты и массивы',
-        description: 'Работа с объектами, массивами и их методами',
-        icon: '📦'
-    },
-    {
-        id: 'dom',
-        title: 'DOM и события',
-        description: 'Работа с DOM-деревом и обработка событий',
-        icon: '🌳'
-    },
-    {
-        id: 'async',
+        id: 3,
         title: 'Асинхронное программирование',
-        description: 'Promise, async/await и работа с асинхронным кодом',
-        icon: '⏳'
-    },
-    {
-        id: 'oop',
-        title: 'ООП в JavaScript',
-        description: 'Классы, наследование и принципы ООП',
-        icon: '🏗️'
+        description: 'Промисы, async/await и работа с асинхронными операциями',
+        link: '/frontend/javascript/async',
+        completed: false
     }
 ];
 
@@ -51,17 +38,28 @@ const JavaScriptPage: React.FC = () => {
                     { title: 'Frontend', url: '/frontend' }
                 ]}
             />
-            <div className={styles.topicsGrid}>
+            
+            <div className={styles.materialsList}>
                 {topics.map((topic) => (
-                    <Link 
-                        key={topic.id} 
-                        to={`/frontend/javascript/${topic.id}`}
-                        className={styles.topicCard}
+                    <motion.div
+                        key={topic.id}
+                        whileHover={{ x: 4 }}
                     >
-                        <div className={styles.topicIcon}>{topic.icon}</div>
-                        <h2 className={styles.topicTitle}>{topic.title}</h2>
-                        <p className={styles.topicDescription}>{topic.description}</p>
-                    </Link>
+                        <Link to={topic.link} className={styles.materialItem}>
+                            <div className={styles.materialContent}>
+                                <div className={styles.materialHeader}>
+                                    <div className={`${styles.completionIcon} ${topic.completed ? styles.completed : styles.inProgress}`}>
+                                        {topic.completed ? <CheckCircle size={20} /> : <Circle size={20} />}
+                                    </div>
+                                    <h3 className={styles.materialTitle}>{topic.title}</h3>
+                                </div>
+                                <p className={styles.materialDescription}>{topic.description}</p>
+                            </div>
+                            <div className={styles.materialAction}>
+                                <ChevronRight size={20} />
+                            </div>
+                        </Link>
+                    </motion.div>
                 ))}
             </div>
         </div>

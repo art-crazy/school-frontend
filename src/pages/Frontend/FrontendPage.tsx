@@ -63,19 +63,19 @@ const FrontendPage: React.FC = () => {
     <div className={styles.frontendPage}>
       <div className={styles.container}>
         <Breadcrumbs title="Frontend" paths={[]} />
-        
-        <motion.div 
+
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className={styles.header}
         >
           <h1 className={styles.title}>Frontend Development</h1>
-          <p className={styles.subtitle}>Изучите современную фронтенд разработку с нашими курсами</p>
+          <p className={styles.subtitle}>Изучи современную фронтенд разработку с помощью наших учебных материалов</p>
         </motion.div>
-        
+
         <div className={styles.divider} />
-        
+
         <div className={styles.topicsGrid}>
           {topics.map((topic, index) => (
             <motion.div
