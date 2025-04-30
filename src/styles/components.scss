@@ -1,0 +1,44 @@
+@use '@/styles/vars' as *;
+
+// Card styles
+.card {
+    background-color: $BACKGROUND_SECONDARY;
+    border: $BORDER;
+    border-radius: $RADIUS_M;
+    transition: all 0.3s ease;
+
+    &:hover {
+        border: $BORDER_HOVER;
+    }
+}
+
+// Badge styles
+.badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: $RADIUS_S;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    background-color: $BACKGROUND_SECONDARY;
+    border: $BORDER;
+    color: white;
+}
+
+// Progress styles
+.progress {
+    position: relative;
+    overflow: hidden;
+    background-color: $BACKGROUND_SECONDARY;
+    border-radius: $RADIUS_S;
+    height: 0.5rem;
+    width: 100%;
+
+    &-bar {
+        background-color: $COLOR_SECONDARY;
+        height: 100%;
+        transition: width 0.3s ease;
+    }
+} 
