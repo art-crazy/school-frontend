@@ -54,10 +54,6 @@
     @apply cursor-pointer transition-all duration-300;
     position: relative;
     overflow: hidden;
-    backdrop-filter: blur(8px);
-    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.8));
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     padding: 0.75rem;
     border-radius: 0.75rem;
     text-decoration: none;
@@ -65,6 +61,9 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.8));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 
     &::before {
         content: '';
@@ -78,11 +77,10 @@
     &:hover {
         border-color: rgba(255, 255, 255, 0.2);
         box-shadow: 0 0 30px rgba(56, 189, 248, 0.1);
-        transform: translateX(4px);
-
         &::before {
             opacity: 1;
         }
+        transform: translateX(4px);
     }
 }
 
@@ -140,9 +138,11 @@
 .materialTitle {
     @apply text-lg font-semibold text-white;
     text-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
-    background: linear-gradient(to right, #fff, rgba(255, 255, 255, 0.8));
+    background: linear-gradient(to right, #fff, rgba(255, 255, 255, 1.0));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    position: relative;
+    z-index: 1;
 }
 
 .materialDescription {
