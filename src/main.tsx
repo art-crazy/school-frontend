@@ -22,6 +22,7 @@ import FrontendPage from "@/pages/Frontend/FrontendPage";
 import JavaScriptPage from "@/pages/Frontend/JavaScriptPage";
 import TopicPage from "@/pages/Frontend/TopicPage";
 import PromiseTasksPage from "@/pages/Frontend/promise-tasks/PromiseTasksPage.tsx";
+import PromiseTasksListPage from "@/pages/Frontend/PromiseTasksListPage";
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
@@ -51,9 +52,8 @@ const App = () => {
               <Route path="/frontend" element={<FrontendPage />} />
               <Route path="/frontend/javascript" element={<JavaScriptPage />} />
               <Route path="/frontend/javascript/:topicId" element={<TopicPage />} />
-              <Route path="/frontend/promise-tasks" element={<Navigate to="/frontend/promise-tasks/1" replace />} />
-              <Route path="/frontend/promise-tasks/:page" element={<PromiseTasksPage />} />
-              <Route path="/frontend/promise-tasks" element={<PromiseTasksPage />} />
+              <Route path="/frontend/promise-tasks" element={<PromiseTasksListPage />} />
+              <Route path="/frontend/promise-tasks/:taskId" element={<PromiseTasksPage />} />
               <Route path="/useMemo" element={<UseMemoPage />} />
               <Route path="/useCallback" element={<UseCallbackPage />} />
               <Route path="/login" element={<Navigate to="/" />} />
