@@ -57,7 +57,6 @@
 
 .container {
   width: 100%;
-  max-width: 1200px;
   margin: 0 auto;
   padding: 0 2rem;
   min-height: calc(100vh - 64px);
@@ -561,4 +560,8 @@
   color: #666;
   line-height: 1.6;
   margin: 0;
+}
+
+.block {
+  display: block;
 }

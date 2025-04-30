@@ -84,7 +84,7 @@ const FrontendPage: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Link to={topic.link} className="block">
+              <Link to={topic.link} className={styles.block}>
                 <Card className={`${styles.topicCard} group`}>
                   <CardHeader>
                     <div className={`${styles.icon} bg-gradient-to-br ${topic.gradient}`}>
@@ -118,4 +118,3 @@ const FrontendPage: React.FC = () => {
 };
 
 export default FrontendPage;
-
