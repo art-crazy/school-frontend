@@ -11,8 +11,8 @@ const TopicPage: React.FC = () => {
 
     if (!task) {
         return (
-            <div className={styles.container}>
-                <div className={styles.content}>
+            <div className={styles.promiseTasksPage}>
+                <div className={styles.container}>
                     <Breadcrumbs
                         title="Тема не найдена"
                         paths={[
@@ -44,8 +44,8 @@ const TopicPage: React.FC = () => {
     };
 
     return (
-        <div className={styles.container}>
-            <div className={styles.content}>
+        <div className={styles.promiseTasksPage}>
+            <div className={styles.container}>
                 <Breadcrumbs
                     title={task.title}
                     paths={[
@@ -61,40 +61,42 @@ const TopicPage: React.FC = () => {
                     </p>
                 </div>
 
-                <div className={styles.taskContent}>
-                    <p>{task.content.description}</p>
-                    {task.content.code && (
-                        <pre className={styles.codeBlock}>
-                            <code>{task.content.code}</code>
-                        </pre>
-                    )}
-                    {task.content.explanation && (
-                        <div className={styles.explanation}>
-                            <p>{task.content.explanation}</p>
-                        </div>
-                    )}
-                    {task.content.hints && task.content.hints.length > 0 && (
-                        <div className={styles.hints}>
-                            <h3>Подсказки:</h3>
-                            <ul>
-                                {task.content.hints.map((hint) => (
-                                    <li key={hint.id}>{hint.text}</li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
+                <div className={styles.tasksList}>
+                    <div className={styles.taskContent}>
+                        <p>{task.content.description}</p>
+                        {task.content.code && (
+                            <pre className={styles.codeBlock}>
+                                <code>{task.content.code}</code>
+                            </pre>
+                        )}
+                        {task.content.explanation && (
+                            <div className={styles.explanation}>
+                                <p>{task.content.explanation}</p>
+                            </div>
+                        )}
+                        {task.content.hints && task.content.hints.length > 0 && (
+                            <div className={styles.hints}>
+                                <h3>Подсказки:</h3>
+                                <ul>
+                                    {task.content.hints.map((hint) => (
+                                        <li key={hint.id}>{hint.text}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
-                <div className={styles.navigation}>
+                <div className={styles.pagination}>
                     <button
-                        className={styles.navButton}
+                        className={styles.paginationButton}
                         onClick={() => handleNavigation('prev')}
                         disabled={!prevTask}
                     >
                         ← Предыдущая тема
                     </button>
                     <button
-                        className={styles.navButton}
+                        className={styles.paginationButton}
                         onClick={() => handleNavigation('next')}
                         disabled={!nextTask}
                     >
