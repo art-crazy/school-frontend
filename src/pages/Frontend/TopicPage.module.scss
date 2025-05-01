@@ -1,19 +1,92 @@
 @use '@/styles/vars' as *;
 
 .container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 100%;
+        background: radial-gradient(circle at 50% 50%, rgba(56, 189, 248, 0.05), transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+    }
 }
 
 .content {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 1rem;
+    min-height: calc(100vh - 64px);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 10;
+
+    @media screen and (min-width: 650px) {
+        padding: 0 2rem;
+    }
+}
+
+.header {
+    @apply text-center space-y-4;
+    padding: 1rem 0;
+
+    @media screen and (min-width: 650px) {
+        @apply space-y-6;
+        padding: 2rem 0;
+    }
+}
+
+.title {
+    @apply text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500;
+    text-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+
+    @media screen and (min-width: 650px) {
+        @apply text-6xl;
+    }
+}
+
+.subtitle {
+    @apply text-lg text-gray-300/90 leading-relaxed;
+
+    @media screen and (min-width: 650px) {
+        @apply text-xl;
+    }
+}
+
+.taskContent {
     background: rgba(30, 41, 59, 0.8);
     border-radius: 0.75rem;
     padding: 2rem;
     margin-top: 2rem;
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    &:hover {
+        border-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 0 30px rgba(56, 189, 248, 0.1);
+        
+        &::before {
+            opacity: 1;
+        }
+    }
 
     h1 {
         @apply text-3xl font-bold text-gray-100 mb-6;

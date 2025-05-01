@@ -12,16 +12,20 @@ const TopicPage: React.FC = () => {
     if (!task) {
         return (
             <div className={styles.container}>
-                <Breadcrumbs
-                    title="Тема не найдена"
-                    paths={[
-                        { title: 'Frontend', url: '/frontend' },
-                        { title: 'JavaScript', url: '/frontend/javascript' }
-                    ]}
-                />
                 <div className={styles.content}>
-                    <h1>Тема не найдена</h1>
-                    <p>Запрошенная тема не существует или была удалена</p>
+                    <Breadcrumbs
+                        title="Тема не найдена"
+                        paths={[
+                            { title: 'Frontend', url: '/frontend' },
+                            { title: 'JavaScript', url: '/frontend/javascript' }
+                        ]}
+                    />
+                    <div className={styles.header}>
+                        <h1 className={styles.title}>Тема не найдена</h1>
+                        <p className={styles.subtitle}>
+                            Запрошенная тема не существует или была удалена
+                        </p>
+                    </div>
                 </div>
             </div>
         );
@@ -41,52 +45,62 @@ const TopicPage: React.FC = () => {
 
     return (
         <div className={styles.container}>
-            <Breadcrumbs
-                title={task.title}
-                paths={[
-                    { title: 'Frontend', url: '/frontend' },
-                    { title: 'JavaScript', url: '/frontend/javascript' }
-                ]}
-            />
             <div className={styles.content}>
-                <h1>{task.title}</h1>
-                <p>{task.content.description}</p>
-                {task.content.code && (
-                    <pre className={styles.codeBlock}>
-                        <code>{task.content.code}</code>
-                    </pre>
-                )}
-                {task.content.explanation && (
-                    <div className={styles.explanation}>
-                        <p>{task.content.explanation}</p>
-                    </div>
-                )}
-                {task.content.hints && task.content.hints.length > 0 && (
-                    <div className={styles.hints}>
-                        <h3>Подсказки:</h3>
-                        <ul>
-                            {task.content.hints.map((hint) => (
-                                <li key={hint.id}>{hint.text}</li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
-            </div>
-            <div className={styles.navigation}>
-                <button
-                    className={styles.navButton}
-                    onClick={() => handleNavigation('prev')}
-                    disabled={!prevTask}
-                >
-                    ← Предыдущая тема
-                </button>
-                <button
-                    className={styles.navButton}
-                    onClick={() => handleNavigation('next')}
-                    disabled={!nextTask}
-                >
-                    Следующая тема →
-                </button>
+                <Breadcrumbs
+                    title={task.title}
+                    paths={[
+                        { title: 'Frontend', url: '/frontend' },
+                        { title: 'JavaScript', url: '/frontend/javascript' }
+                    ]}
+                />
+
+                <div className={styles.header}>
+                    <h1 className={styles.title}>{task.title}</h1>
+                    <p className={styles.subtitle}>
+                        Изучите базовые концепции и синтаксис JavaScript
+                    </p>
+                </div>
+
+                <div className={styles.taskContent}>
+                    <p>{task.content.description}</p>
+                    {task.content.code && (
+                        <pre className={styles.codeBlock}>
+                            <code>{task.content.code}</code>
+                        </pre>
+                    )}
+                    {task.content.explanation && (
+                        <div className={styles.explanation}>
+                            <p>{task.content.explanation}</p>
+                        </div>
+                    )}
+                    {task.content.hints && task.content.hints.length > 0 && (
+                        <div className={styles.hints}>
+                            <h3>Подсказки:</h3>
+                            <ul>
+                                {task.content.hints.map((hint) => (
+                                    <li key={hint.id}>{hint.text}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+                </div>
+
+                <div className={styles.navigation}>
+                    <button
+                        className={styles.navButton}
+                        onClick={() => handleNavigation('prev')}
+                        disabled={!prevTask}
+                    >
+                        ← Предыдущая тема
+                    </button>
+                    <button
+                        className={styles.navButton}
+                        onClick={() => handleNavigation('next')}
+                        disabled={!nextTask}
+                    >
+                        Следующая тема →
+                    </button>
+                </div>
             </div>
         </div>
     );
