@@ -113,9 +113,10 @@ const PromiseTasksPage: React.FC = () => {
         <div className={styles.promiseTasksPage}>
             <div className={styles.container}>
                 <Breadcrumbs
-                    title="Задачи на Promise"
+                    title={currentTask.title}
                     paths={[
-                        { title: 'Frontend', url: '/frontend' }
+                        { title: 'Frontend', url: '/frontend' },
+                        { title: 'Задачи на Promise', url: '/frontend/promise-tasks' },
                     ]}
                 />
 
