@@ -1,77 +1,77 @@
+@use '@/styles/vars' as *;
+
 .container {
-    max-width: 800px;
+    width: 100%;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
 }
 
 .content {
-    flex: 1;
-    background: #ffffff;
+    background: rgba(30, 41, 59, 0.8);
+    border-radius: 0.75rem;
     padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin: 2rem 0;
+    margin-top: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 
     h1 {
-        font-size: 2rem;
-        color: #2c3e50;
-        margin-bottom: 1.5rem;
-    }
-
-    h2 {
-        font-size: 1.5rem;
-        color: #2c3e50;
-        margin: 1.5rem 0 1rem;
+        @apply text-3xl font-bold text-gray-100 mb-6;
     }
 
     p {
-        line-height: 1.6;
-        margin-bottom: 1rem;
+        @apply text-gray-300/90 leading-relaxed mb-4;
+    }
+}
+
+.codeBlock {
+    @apply bg-gray-900 text-gray-100 p-4 rounded-lg my-4 overflow-x-auto;
+    font-family: monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+
+    code {
+        @apply bg-transparent p-0;
+    }
+}
+
+.explanation {
+    @apply bg-blue-900/20 p-4 rounded-lg my-4;
+    border-left: 4px solid rgba(56, 189, 248, 0.5);
+
+    p {
+        @apply text-blue-100/90;
+        margin: 0;
+    }
+}
+
+.hints {
+    @apply bg-purple-900/20 p-4 rounded-lg my-4;
+    border-left: 4px solid rgba(168, 85, 247, 0.5);
+
+    h3 {
+        @apply text-purple-100 font-semibold mb-2;
     }
 
-    ul, ol {
-        margin: 1rem 0;
-        padding-left: 1.5rem;
+    ul {
+        @apply list-disc pl-6 space-y-2;
+        margin: 0;
     }
 
     li {
-        margin-bottom: 0.5rem;
-    }
-
-    code {
-        background: #f5f5f5;
-        padding: 0.2rem 0.4rem;
-        border-radius: 4px;
-        font-family: monospace;
+        @apply text-purple-100/90;
     }
 }
 
 .navigation {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 2rem;
-    padding: 1rem 0;
+    @apply flex justify-between mt-8;
 }
 
 .navButton {
-    padding: 0.8rem 1.5rem;
-    background: #007bff;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.2s ease;
-
-    &:hover:not(:disabled) {
-        background: #0056b3;
-    }
+    @apply px-4 py-2 rounded-lg bg-gray-800 text-gray-100 hover:bg-gray-700 transition-colors;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 
     &:disabled {
-        background: #cccccc;
-        cursor: not-allowed;
+        @apply opacity-50 cursor-not-allowed;
     }
 } 

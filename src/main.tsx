@@ -16,13 +16,14 @@ import UseCallbackPage from "@/pages/UseCallback";
 import ErrorFallback from "./shared/components/ErrorFallback";
 import * as Sentry from "@sentry/react";
 import "./shared/instrument";
-
-const SentryRoutes = Sentry.withSentryReactRouterV7Routing(Routes);
 import FrontendPage from "@/pages/Frontend/FrontendPage";
 import JavaScriptPage from "@/pages/Frontend/JavaScriptPage";
 import TopicPage from "@/pages/Frontend/TopicPage";
 import PromiseTasksPage from "@/pages/Frontend/promise-tasks/PromiseTasksPage";
 import PromiseTasksListPage from "@/pages/Frontend/PromiseTasksListPage";
+import BasicsPage from "@/pages/Frontend/JavaScript/BasicsPage";
+
+const SentryRoutes = Sentry.withSentryReactRouterV7Routing(Routes);
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
@@ -68,6 +69,7 @@ const App = () => {
               <Route path="/faq" element={<PrivateRoute><Home /></PrivateRoute>} />
               <Route path="/verify-email" element={<VerifyEmail />} />
               <Route path="/email-verification" element={<EmailVerification />} />
+              <Route path="/frontend/javascript/:taskId" element={<BasicsPage />} />
             </SentryRoutes>
             <AuthModal
                 isOpen={isAuthModalOpen}
