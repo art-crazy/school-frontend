@@ -9,10 +9,9 @@ import {
     Code,
     Lightbulb,
     AlertCircle,
-    ChevronLeft,
-    ChevronRight as ChevronRightIcon
 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { TaskNavigation } from '@/shared/ui/TaskNavigation/TaskNavigation';
 
 interface Task {
     id: string;
@@ -230,27 +229,14 @@ const PromiseTasksPage: React.FC = () => {
                     </div>
                 </div>
 
-                <div className={styles.pagination}>
-                    <button
-                        onClick={() => handleTaskNavigation('prev')}
-                        disabled={currentTaskIndex === 0}
-                        className={styles.paginationButton}
-                    >
-                        <ChevronLeft size={20} />
-                        <span>Предыдущая задача</span>
-                    </button>
-                    <div className={styles.pageInfo}>
-                        Задача {currentTaskIndex + 1} из {tasks.length}
-                    </div>
-                    <button
-                        onClick={() => handleTaskNavigation('next')}
-                        disabled={currentTaskIndex === tasks.length - 1}
-                        className={styles.paginationButton}
-                    >
-                        <span>Следующая задача</span>
-                        <ChevronRightIcon size={20} />
-                    </button>
-                </div>
+                <TaskNavigation
+                    currentIndex={currentTaskIndex}
+                    totalCount={tasks.length}
+                    onPrev={() => handleTaskNavigation('prev')}
+                    onNext={() => handleTaskNavigation('next')}
+                    prevDisabled={currentTaskIndex === 0}
+                    nextDisabled={currentTaskIndex === tasks.length - 1}
+                />
             </div>
         </div>
     );

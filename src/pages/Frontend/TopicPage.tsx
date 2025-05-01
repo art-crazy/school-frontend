@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import styles from './TopicPage.module.scss';
 import { Breadcrumbs } from '../../shared/ui/Breadcrumbs/Breadcrumbs';
 import { javascriptTasks } from './JavaScript/javascriptBasicsTasks';
+import { TaskNavigation } from '@/shared/ui/TaskNavigation/TaskNavigation';
 
 const TopicPage: React.FC = () => {
     const navigate = useNavigate();
@@ -87,22 +88,14 @@ const TopicPage: React.FC = () => {
                     </div>
                 </div>
 
-                <div className={styles.pagination}>
-                    <button
-                        className={styles.paginationButton}
-                        onClick={() => handleNavigation('prev')}
-                        disabled={!prevTask}
-                    >
-                        ← Предыдущая тема
-                    </button>
-                    <button
-                        className={styles.paginationButton}
-                        onClick={() => handleNavigation('next')}
-                        disabled={!nextTask}
-                    >
-                        Следующая тема →
-                    </button>
-                </div>
+                <TaskNavigation
+                    currentIndex={currentIndex}
+                    totalCount={javascriptTasks.length}
+                    onPrev={() => handleNavigation('prev')}
+                    onNext={() => handleNavigation('next')}
+                    prevDisabled={!prevTask}
+                    nextDisabled={!nextTask}
+                />
             </div>
         </div>
     );

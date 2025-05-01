@@ -1,0 +1,43 @@
+@use '@/styles/vars' as *;
+
+.navigation {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding: 0 1rem;
+
+    @media screen and (min-width: 650px) {
+        margin-top: 3rem;
+        padding: 0 2rem;
+    }
+}
+
+.navButton {
+    @apply px-4 py-2 rounded-lg bg-gray-800 text-white font-medium flex items-center gap-2;
+    transition: all 0.2s ease;
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    &:not(:disabled):hover {
+        background: rgba(56, 189, 248, 0.1);
+    }
+
+    @media screen and (min-width: 650px) {
+        @apply px-6 py-2;
+    }
+}
+
+.pageInfo {
+    @apply text-gray-300 font-medium;
+    min-width: 120px;
+    text-align: center;
+
+    @media screen and (min-width: 650px) {
+        min-width: 150px;
+    }
+}
