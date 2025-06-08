@@ -29,6 +29,12 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Загружаем скрипт Telegram только если не dev окружение
+    if (import.meta.env.MODE === 'development') {
+      console.log('Telegram widget disabled in dev environment');
+      return;
+    }
+
     // Загружаем скрипт Telegram
     const script = document.createElement('script');
     script.src = 'https://telegram.org/js/telegram-widget.js?22';
