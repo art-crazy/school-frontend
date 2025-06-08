@@ -8,6 +8,7 @@ export default function Navigation() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [scrollPosition, setScrollPosition] = useState(0);
 
+    console.log('master: commit 2')
     useEffect(() => {
         if (isMenuOpen) {
             setScrollPosition(window.scrollY);
