@@ -11,6 +11,7 @@ export default function Navigation() {
     console.log('master: commit 2')
     console.log('master: commit 3')
     console.log('master: commit 5')
+    console.log('master: commit 7')
 
 
     useEffect(() => {
