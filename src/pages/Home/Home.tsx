@@ -10,6 +10,8 @@ import Navigation from "@/shared/components/Navigation";
 function Home() {
 
     console.log('commit 1')
+    console.log('feat222: commit 4')
+
     const location = useLocation();
 
     useEffect(() => {
