@@ -11,6 +11,7 @@ export default function Navigation() {
     console.log('master: commit 2')
     console.log('master: commit 3')
 
+    console.log('master: commit 2')
     useEffect(() => {
         if (isMenuOpen) {
             setScrollPosition(window.scrollY);
