@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { FaBars, FaTimes } from 'react-icons/fa';
+import { Button as NavButton} from "school-ui";
 import styles from './Navigation.module.scss';
 
 export default function Navigation() {
@@ -54,14 +55,7 @@ export default function Navigation() {
             <div className={`${styles.nav__container} ${isMenuOpen ? styles.open : ''}`}>
                 <div className={styles.menuContent}>
                     {navContents.map((nav, index) => (
-                        <div key={index} className={styles.navWrapper}>
-                            <nav
-                                className={styles.nav}
-                                onClick={() => handleNavClick(nav.to)}
-                            >
-                                {nav.content}
-                            </nav>
-                        </div>
+                        <NavButton key={index} content={nav.content} navigateTo={() => handleNavClick(nav.to)}/>
                     ))}
                 </div>
             </div>
