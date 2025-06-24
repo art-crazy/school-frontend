@@ -4,27 +4,27 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Breadcrumbs } from '@/shared/ui/Breadcrumbs/Breadcrumbs';
 import { motion } from 'framer-motion';
-import { ArrowRight, Zap, Terminal } from 'lucide-react';
+import {ArrowRight, Zap, Terminal, GitBranch, Type, Code, Layout} from 'lucide-react';
 import styles from './FrontendPage.module.scss';
 
 const topics = [
   //   НЕ УДАЛЯТЬ ЗАКОММЕНТИРОВАННЫЙ КОД
-  // {
-  //   title: 'HTML',
-  //   description: 'Изучите основы HTML и создание структуры веб-страниц',
-  //   tags: ['HTML5', 'Семантика', 'Формы'],
-  //   link: '/frontend/html',
-  //   gradient: 'from-blue-400 to-cyan-300',
-  //   icon: <Layout size={24} />
-  // },
-  // {
-  //   title: 'CSS',
-  //   description: 'Научитесь стилизовать веб-страницы с помощью CSS',
-  //   tags: ['CSS3', 'Flexbox', 'Grid'],
-  //   link: '/frontend/css',
-  //   gradient: 'from-purple-400 to-pink-300',
-  //   icon: <Code size={24} />
-  // },
+  {
+    title: 'HTML',
+    description: 'Изучите основы HTML и создание структуры веб-страниц',
+    tags: ['HTML5', 'Семантика', 'Формы'],
+    link: '/frontend/html',
+    gradient: 'from-blue-400 to-cyan-300',
+    icon: <Layout size={24} />
+  },
+  {
+    title: 'CSS',
+    description: 'Научитесь стилизовать веб-страницы с помощью CSS',
+    tags: ['CSS3', 'Flexbox', 'Grid'],
+    link: '/frontend/css',
+    gradient: 'from-purple-400 to-pink-300',
+    icon: <Code size={24} />
+  },
   {
     title: 'JavaScript',
     description: 'Освойте программирование на JavaScript',
@@ -33,30 +33,30 @@ const topics = [
     gradient: 'from-yellow-400 to-orange-300',
     icon: <Zap size={24} />
   },
-  // {
-  //   title: 'React',
-  //   description: 'Изучите современный фреймворк для создания пользовательских интерфейсов',
-  //   tags: ['Hooks', 'Components', 'State'],
-  //   link: '/frontend/react',
-  //   gradient: 'from-cyan-400 to-blue-300',
-  //   icon: <Code size={24} />
-  // },
-  // {
-  //   title: 'TypeScript',
-  //   description: 'Добавьте типизацию в ваш JavaScript код',
-  //   tags: ['Types', 'Interfaces', 'Generics'],
-  //   link: '/frontend/typescript',
-  //   gradient: 'from-indigo-400 to-purple-300',
-  //   icon: <Type size={24} />
-  // },
-  // {
-  //   title: 'Git',
-  //   description: 'Научитесь работать с системой контроля версий',
-  //   tags: ['Branches', 'Commits', 'Merge'],
-  //   link: '/frontend/git',
-  //   gradient: 'from-red-400 to-orange-300',
-  //   icon: <GitBranch size={24} />
-  // },
+  {
+    title: 'React',
+    description: 'Изучите современный фреймворк для создания пользовательских интерфейсов',
+    tags: ['Hooks', 'Components', 'State'],
+    link: '/frontend/react',
+    gradient: 'from-cyan-400 to-blue-300',
+    icon: <Code size={24} />
+  },
+  {
+    title: 'TypeScript',
+    description: 'Добавьте типизацию в ваш JavaScript код',
+    tags: ['Types', 'Interfaces', 'Generics'],
+    link: '/frontend/typescript',
+    gradient: 'from-indigo-400 to-purple-300',
+    icon: <Type size={24} />
+  },
+  {
+    title: 'Git',
+    description: 'Научитесь работать с системой контроля версий',
+    tags: ['Branches', 'Commits', 'Merge'],
+    link: '/frontend/git',
+    gradient: 'from-red-400 to-orange-300',
+    icon: <GitBranch size={24} />
+  },
   {
     title: 'Задачи на Promise',
     description: 'Практические задания для отработки работы с Promise',
