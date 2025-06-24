@@ -20,11 +20,10 @@ const Header = ({ onAuthModeChange }: HeaderProps) => {
   return (
     <header className={styles.header}>
       <a
-        className={styles.button}
         href={'/'}
         onClick={handleClick}
       >
-        {`<ХАБ />`}
+        <span className={styles.logo}>mentor hub</span>
       </a>
 
       {isLoading ? (
